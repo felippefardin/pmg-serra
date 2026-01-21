@@ -1,14 +1,15 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { FaUserTie, FaUsers, FaCalendarAlt, FaNewspaper } from 'react-icons/fa';
+import { FaUserTie, FaUsers, FaCalendarAlt, FaNewspaper, FaScroll } from 'react-icons/fa';
 
 export default function Home({ titulo, descricao }) {
     
-    const menuItems = [
+   const menuItems = [
         { label: 'Procuradores', icon: <FaUserTie size={40} />, link: '/procuradores', color: 'bg-blue-600' },
         { label: 'Assessores', icon: <FaUsers size={40} />, link: '/assessores', color: 'bg-green-600' },
         { label: 'Eventos', icon: <FaCalendarAlt size={40} />, link: '/eventos', color: 'bg-orange-500' },
         { label: 'Notícias', icon: <FaNewspaper size={40} />, link: '/noticias', color: 'bg-indigo-600' },
+        { label: 'Carta do Procurador', icon: <FaScroll size={40} />, link: '/carta', color: 'bg-red-700' },
     ];
 
     return (

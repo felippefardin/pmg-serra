@@ -1,24 +1,71 @@
+import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import { FaCalendarPlus, FaNewspaper, FaPenFancy, FaHome } from 'react-icons/fa';
 
-export default function Dashboard() {
+export default function Dashboard({ auth }) {
+    const cards = [
+        {
+            titulo: 'Novo Evento',
+            descricao: 'Adicionar evento na agenda',
+            icone: <FaCalendarPlus size={30} />,
+            link: route('admin.eventos.create'), // Rota que criamos antes
+            cor: 'bg-orange-600'
+        },
+        {
+            titulo: 'Nova Notícia',
+            descricao: 'Publicar notícia recente',
+            icone: <FaNewspaper size={30} />,
+            link: route('admin.noticias.create'),
+            cor: 'bg-indigo-600'
+        },
+        {
+            titulo: 'Escrever Carta',
+            descricao: 'Atualizar palavra do procurador',
+            icone: <FaPenFancy size={30} />,
+            link: route('admin.carta.create'),
+            cor: 'bg-red-700'
+        }
+    ];
+
     return (
         <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard
-                </h2>
-            }
+            user={auth.user}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Painel Administrativo - PGM</h2>}
         >
             <Head title="Dashboard" />
 
             <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            You're logged in!
-                        </div>
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    
+                    {/* Botão para ver o site como visitante */}
+                    <div className="mb-6 flex justify-end">
+                        <Link href="/" className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-bold bg-white px-4 py-2 rounded shadow-sm">
+                            <FaHome /> Ver Site Público
+                        </Link>
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {cards.map((card, index) => (
+                            <Link key={index} href={card.link} className="bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-xl transition-shadow cursor-pointer group">
+                                <div className="p-6 flex items-center gap-4">
+                                    <div className={`${card.cor} text-white p-4 rounded-full group-hover:scale-110 transition-transform`}>
+                                        {card.icone}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-gray-800">{card.titulo}</h3>
+                                        <p className="text-sm text-gray-500">{card.descricao}</p>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                    
+                    <div className="mt-8 bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <h3 className="font-bold text-lg mb-4">Status do Sistema</h3>
+                        <p className="text-gray-600">Bem-vindo, {auth.user.name}. Utilize os cartões acima para gerenciar o conteúdo do portal.</p>
+                    </div>
+
                 </div>
             </div>
         </AuthenticatedLayout>
