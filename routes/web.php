@@ -57,11 +57,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // === GERENCIAR PROCURADORES ===
     Route::get('/admin/procuradores/novo', [AdminController::class, 'createProcurador'])->name('admin.procuradores.create');
     Route::post('/admin/procuradores', [AdminController::class, 'storeProcurador'])->name('admin.procuradores.store');
+    
+    // Rotas de Edição e Atualização (Faltavam estas)
+    Route::get('/admin/procuradores/{id}/editar', [AdminController::class, 'editProcurador'])->name('admin.procuradores.edit');
+    Route::post('/admin/procuradores/{id}', [AdminController::class, 'updateProcurador'])->name('admin.procuradores.update');
+    
     Route::delete('/admin/procuradores/{id}', [AdminController::class, 'destroyProcurador'])->name('admin.procuradores.destroy');
 
     // === GERENCIAR ASSESSORES ===
     Route::get('/admin/assessores/novo', [AdminController::class, 'createAssessor'])->name('admin.assessores.create');
     Route::post('/admin/assessores', [AdminController::class, 'storeAssessor'])->name('admin.assessores.store');
+    
+    // Novas rotas de Edição
+    Route::get('/admin/assessores/{id}/editar', [AdminController::class, 'editAssessor'])->name('admin.assessores.edit');
+    Route::post('/admin/assessores/{id}', [AdminController::class, 'updateAssessor'])->name('admin.assessores.update');
+    
     Route::delete('/admin/assessores/{id}', [AdminController::class, 'destroyAssessor'])->name('admin.assessores.destroy');
 
     // Perfil (Padrão Breeze)

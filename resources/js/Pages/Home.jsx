@@ -9,7 +9,7 @@ export default function Home({ titulo, descricao }) {
         { label: 'Assessores', icon: <FaUsers size={40} />, link: '/assessores', color: 'bg-green-600' },
         { label: 'Eventos', icon: <FaCalendarAlt size={40} />, link: '/eventos', color: 'bg-orange-500' },
         { label: 'Notícias', icon: <FaNewspaper size={40} />, link: '/noticias', color: 'bg-indigo-600' },
-        { label: 'Carta do Procurador', icon: <FaScroll size={40} />, link: '/carta', color: 'bg-red-700' },
+        { label: 'Carta do Procurador', icon: <FaScroll size={40} />, link: '/cartas', color: 'bg-red-700' },
     ];
 
     return (

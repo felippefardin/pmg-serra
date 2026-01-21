@@ -2,15 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Evento extends Model
 {
-    protected $table = 'eventos';
-    protected $fillable = ['titulo', 'descricao', 'data_evento', 'media_path', 'media_type'];
-    
-    // Converte a data automaticamente para objeto Carbon (facilita formatar)
-    protected $casts = [
-        'data_evento' => 'datetime',
+    use HasFactory;
+
+    protected $fillable = [
+        'titulo', 
+        'chamativo', 
+        'descricao', 
+        'data_evento', 
+        'media_path', 
+        'media_type'
     ];
+
+    // ESTA É A FUNÇÃO QUE ESTAVA FALTANDO
+    public function fotos()
+    {
+        return $this->hasMany(EventoFoto::class);
+    }
 }

@@ -1,7 +1,8 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-import { FaCalendarPlus, FaNewspaper, FaPenFancy, FaHome } from 'react-icons/fa';
+// Importação limpa e unificada dos ícones
+import { FaCalendarPlus, FaNewspaper, FaPenFancy, FaHome, FaUserTie, FaUsers } from 'react-icons/fa';
 
 export default function Dashboard({ auth }) {
     const cards = [
@@ -23,9 +24,23 @@ export default function Dashboard({ auth }) {
             titulo: 'Escrever Carta',
             descricao: 'Atualizar palavra do procurador',
             icone: <FaPenFancy size={30} />,
-            // CORREÇÃO AQUI: mudou de 'admin.carta.create' para 'admin.cartas.create'
-            link: route('admin.cartas.create'), 
+            link: route('admin.cartas.create'),
             cor: 'bg-red-700'
+        },
+        {
+            titulo: 'Novo Procurador',
+            descricao: 'Adicionar membro à equipe',
+            icone: <FaUserTie size={30} />,
+            link: route('admin.procuradores.create'), 
+            cor: 'bg-blue-600'
+        },
+        // Novo Card para Assessores
+        {
+            titulo: 'Novo Assessor',
+            descricao: 'Adicionar equipe de apoio',
+            icone: <FaUsers size={30} />,
+            link: route('admin.assessores.create'), 
+            cor: 'bg-green-600'
         }
     ];
 
@@ -46,7 +61,11 @@ export default function Dashboard({ auth }) {
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Ajustei para lg:grid-cols-3. 
+                       Com 5 itens, ficarão 3 na primeira linha e 2 centralizados (ou à esquerda) na segunda,
+                       o que visualmente fica melhor do que 4 em cima e 1 sozinho em baixo.
+                    */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> 
                         {cards.map((card, index) => (
                             <Link key={index} href={card.link} className="bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-xl transition-shadow cursor-pointer group">
                                 <div className="p-6 flex items-center gap-4">
