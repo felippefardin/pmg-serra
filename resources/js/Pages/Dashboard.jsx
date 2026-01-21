@@ -1,8 +1,8 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-// Importação limpa e unificada dos ícones
-import { FaCalendarPlus, FaNewspaper, FaPenFancy, FaHome, FaUserTie, FaUsers } from 'react-icons/fa';
+// Importação correta e unificada dos ícones (Adicionado FaTh para o menu de ícones)
+import { FaCalendarPlus, FaNewspaper, FaPenFancy, FaHome, FaUserTie, FaUsers, FaTh } from 'react-icons/fa';
 
 export default function Dashboard({ auth }) {
     const cards = [
@@ -34,56 +34,66 @@ export default function Dashboard({ auth }) {
             link: route('admin.procuradores.create'), 
             cor: 'bg-blue-600'
         },
-        // Novo Card para Assessores
         {
             titulo: 'Novo Assessor',
             descricao: 'Adicionar equipe de apoio',
             icone: <FaUsers size={30} />,
             link: route('admin.assessores.create'), 
             cor: 'bg-green-600'
-        }
+        },
+        // Card Corrigido e Ativo para Gerenciar Ícones da Home
+        {
+            titulo: 'Gerenciar Ícones',
+            descricao: 'Editar menu da Home',
+            icone: <FaTh size={30} />, // Ícone corrigido de Fath para FaTh
+            link: route('admin.home-icons.index'), // Certifique-se que esta rota existe no web.php
+            cor: 'bg-gray-600'
+        },
     ];
 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Painel Administrativo - PGM</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Painel Administrativo - PGM</h2>}
         >
             <Head title="Dashboard" />
 
-            <div className="py-12">
+            <div className="py-12 bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     
                     {/* Botão para ver o site como visitante */}
                     <div className="mb-6 flex justify-end">
-                        <Link href="/" className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-bold bg-white px-4 py-2 rounded shadow-sm">
+                        <Link href="/" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-bold bg-white dark:bg-gray-800 px-4 py-2 rounded shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                             <FaHome /> Ver Site Público
                         </Link>
                     </div>
 
-                    {/* Ajustei para lg:grid-cols-3. 
-                       Com 5 itens, ficarão 3 na primeira linha e 2 centralizados (ou à esquerda) na segunda,
-                       o que visualmente fica melhor do que 4 em cima e 1 sozinho em baixo.
-                    */}
+                    {/* Grid de Cartões */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> 
                         {cards.map((card, index) => (
-                            <Link key={index} href={card.link} className="bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-xl transition-shadow cursor-pointer group">
+                            <Link key={index} href={card.link} className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg hover:shadow-xl dark:hover:shadow-gray-700 transition-all cursor-pointer group border border-gray-100 dark:border-gray-700">
                                 <div className="p-6 flex items-center gap-4">
-                                    <div className={`${card.cor} text-white p-4 rounded-full group-hover:scale-110 transition-transform`}>
+                                    <div className={`${card.cor} text-white p-4 rounded-full group-hover:scale-110 transition-transform shadow-md`}>
                                         {card.icone}
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-bold text-gray-800">{card.titulo}</h3>
-                                        <p className="text-sm text-gray-500">{card.descricao}</p>
+                                        <h3 className="text-lg font-bold text-gray-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                            {card.titulo}
+                                        </h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">{card.descricao}</p>
                                     </div>
                                 </div>
                             </Link>
                         ))}
                     </div>
                     
-                    <div className="mt-8 bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                        <h3 className="font-bold text-lg mb-4">Status do Sistema</h3>
-                        <p className="text-gray-600">Bem-vindo, {auth.user.name}. Utilize os cartões acima para gerenciar o conteúdo do portal.</p>
+                    {/* Área de Status */}
+                    <div className="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-100 dark:border-gray-700">
+                        <h3 className="font-bold text-lg mb-4 text-gray-800 dark:text-white border-b pb-2 dark:border-gray-700">Status do Sistema</h3>
+                        <p className="text-gray-600 dark:text-gray-300">
+                            Bem-vindo, <span className="font-semibold text-blue-600 dark:text-blue-400">{auth.user.name}</span>. 
+                            Utilize os cartões acima para gerenciar o conteúdo do portal de forma rápida e segura.
+                        </p>
                     </div>
 
                 </div>

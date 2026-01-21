@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomeIconController;
 
 // ==========================================
 // ÁREA PÚBLICA (Qualquer pessoa vê)
@@ -78,6 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('home-icons', HomeIconController::class);
 });
 
 require __DIR__.'/auth.php';

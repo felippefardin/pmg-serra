@@ -9,16 +9,18 @@ use App\Models\Assessor;
 use App\Models\Evento;
 use App\Models\Noticia;
 use App\Models\Carta;
+use App\Models\HomeIcon;
 
 class SiteController extends Controller
 {
     // Home
-    public function home() {
-        return Inertia::render('Home', [
-            'titulo' => 'Procuradoria Geral do Município da Serra',
-            'descricao' => 'Bem-vindo ao portal oficial da PGM Serra. Comprometidos com a justiça e a legalidade municipal.'
-        ]);
-    }
+   public function home()
+{
+    $icons = HomeIcon::where('ativo', true)->get();
+    return Inertia::render('Home', [
+        'dynamicIcons' => $icons
+    ]);
+}
 
     // Listagens (Index)
     public function procuradores() {
@@ -67,4 +69,5 @@ class SiteController extends Controller
             'carta' => Carta::with('fotos')->findOrFail($id)
         ]);
     }
+    
 }
