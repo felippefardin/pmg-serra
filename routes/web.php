@@ -1,27 +1,20 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Rota Principal (Landing Page)
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+    return Inertia::render('Home', [
+        'titulo' => 'Procuradoria Geral do Município da Serra',
+        'descricao' => 'Bem-vindo ao portal oficial da PGM Serra. Comprometidos com a justiça e a legalidade municipal.'
     ]);
-});
+})->name('home');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Rotas Placeholder (Você criará essas páginas depois)
+Route::get('/procuradores', function () { dd('Página em construção: Procuradores'); })->name('procuradores');
+Route::get('/assessores', function () { dd('Página em construção: Assessores'); })->name('assessores');
+Route::get('/eventos', function () { dd('Página em construção: Eventos'); })->name('eventos');
+Route::get('/noticias', function () { dd('Página em construção: Notícias'); })->name('noticias');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-require __DIR__.'/auth.php';
+require __DIR__.'/auth.php'; // Mantém as rotas de login que vieram com o Breeze
