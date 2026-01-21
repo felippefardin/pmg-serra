@@ -3,13 +3,19 @@ import { Link, usePage } from '@inertiajs/react';
 import FontSizeControls from '@/Components/FontSizeControls';
 import ThemeToggle from '@/Components/ThemeToggle';
 import { FaPhoneAlt, FaEnvelope, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
+// 1. IMPORTAÇÃO DO COMPONENTE FLASH
+import FlashMessage from '@/Components/FlashMessage';
 
 export default function PublicLayout({ children, title }) {
-    const { auth } = usePage().props;
+    // 2. RECUPERAR A PROP 'flash' DO INERTIA
+    const { auth, flash } = usePage().props;
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
             
+            {/* 3. EXIBIR A MENSAGEM SE ELA EXISTIR */}
+            {flash && <FlashMessage message={flash.message} />}
+
             {/* CABEÇALHO */}
             <header className="bg-gray-50 dark:bg-gray-950 text-black dark:text-white shadow-sm sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
                 <div className="container mx-auto px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -18,11 +24,10 @@ export default function PublicLayout({ children, title }) {
                     <div className="flex items-center justify-between w-full md:w-auto">
                         <Link href="/" className="flex items-center gap-4 hover:opacity-90 transition group">
                             
-                            {/* --- BOLINHA PMG (Restaurada) --- */}
+                            {/* --- BOLINHA PMG --- */}
                             <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center text-blue-900 dark:text-blue-400 font-extrabold shadow-sm text-sm shrink-0 border border-gray-200 dark:border-gray-700 group-hover:scale-105 transition-transform duration-300">
                                 PMG
                             </div>
-                            {/* -------------------------------- */}
 
                             <div className="flex flex-col justify-center">
                                 <h1 className="text-xl font-extrabold leading-none text-black dark:text-white tracking-tight">
@@ -46,9 +51,6 @@ export default function PublicLayout({ children, title }) {
                         </div>
 
                         <nav className="flex items-center gap-6">
-                            {/* <Link href="/" className="text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition hidden lg:block uppercase tracking-wider">
-                                Início
-                            </Link> */}
                             {auth.user ? (
                                 <Link href="/dashboard" className="px-5 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-full text-sm font-bold transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                     Painel

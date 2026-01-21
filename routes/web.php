@@ -25,6 +25,9 @@ Route::get('/evento/{id}', [SiteController::class, 'showEvento'])->name('evento.
 Route::get('/noticia/{id}', [SiteController::class, 'showNoticia'])->name('noticia.show');
 Route::get('/carta/{id}', [SiteController::class, 'showCarta'])->name('carta.show');
 
+// Visualização do Ícone Dinâmico (Texto/Informação)
+Route::get('/informacao/{id}', [HomeIconController::class, 'showPublic'])->name('icone.show');
+
 // ==========================================
 // ÁREA ADMINISTRATIVA (Requer Login)
 // ==========================================
@@ -37,9 +40,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // === GERENCIAR NOTÍCIAS ===
     Route::get('/admin/noticias/nova', [AdminController::class, 'createNoticia'])->name('admin.noticias.create');
     Route::post('/admin/noticias', [AdminController::class, 'storeNoticia'])->name('admin.noticias.store');
-    Route::get('/admin/noticias/{id}/editar', [AdminController::class, 'editNoticia'])->name('admin.noticias.edit'); // Tela de edição
-    Route::post('/admin/noticias/{id}', [AdminController::class, 'updateNoticia'])->name('admin.noticias.update');  // Salvar edição (POST para suportar arquivo)
-    Route::delete('/admin/noticias/{id}', [AdminController::class, 'destroyNoticia'])->name('admin.noticias.destroy'); // Apagar
+    Route::get('/admin/noticias/{id}/editar', [AdminController::class, 'editNoticia'])->name('admin.noticias.edit'); 
+    Route::post('/admin/noticias/{id}', [AdminController::class, 'updateNoticia'])->name('admin.noticias.update');  
+    Route::delete('/admin/noticias/{id}', [AdminController::class, 'destroyNoticia'])->name('admin.noticias.destroy');
 
     // === GERENCIAR EVENTOS ===
     Route::get('/admin/eventos/novo', [AdminController::class, 'createEvento'])->name('admin.eventos.create');
@@ -58,28 +61,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // === GERENCIAR PROCURADORES ===
     Route::get('/admin/procuradores/novo', [AdminController::class, 'createProcurador'])->name('admin.procuradores.create');
     Route::post('/admin/procuradores', [AdminController::class, 'storeProcurador'])->name('admin.procuradores.store');
-    
-    // Rotas de Edição e Atualização (Faltavam estas)
     Route::get('/admin/procuradores/{id}/editar', [AdminController::class, 'editProcurador'])->name('admin.procuradores.edit');
     Route::post('/admin/procuradores/{id}', [AdminController::class, 'updateProcurador'])->name('admin.procuradores.update');
-    
     Route::delete('/admin/procuradores/{id}', [AdminController::class, 'destroyProcurador'])->name('admin.procuradores.destroy');
 
     // === GERENCIAR ASSESSORES ===
     Route::get('/admin/assessores/novo', [AdminController::class, 'createAssessor'])->name('admin.assessores.create');
     Route::post('/admin/assessores', [AdminController::class, 'storeAssessor'])->name('admin.assessores.store');
-    
-    // Novas rotas de Edição
     Route::get('/admin/assessores/{id}/editar', [AdminController::class, 'editAssessor'])->name('admin.assessores.edit');
     Route::post('/admin/assessores/{id}', [AdminController::class, 'updateAssessor'])->name('admin.assessores.update');
-    
     Route::delete('/admin/assessores/{id}', [AdminController::class, 'destroyAssessor'])->name('admin.assessores.destroy');
 
-    // Perfil (Padrão Breeze)
+    // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::resource('home-icons', HomeIconController::class);
+
+    // === GERENCIAR ÍCONES DA HOME ===
+    // Cria rotas admin.home-icons.index, create, store, edit, update, destroy
+    // O 'except show' evita conflito com a rota pública de visualização
+    Route::resource('admin/home-icons', HomeIconController::class)
+        ->names('admin.home-icons')
+        ->except(['show']);
+
 });
 
 require __DIR__.'/auth.php';
