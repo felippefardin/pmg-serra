@@ -9,7 +9,7 @@ export default function Dashboard({ auth }) {
             titulo: 'Novo Evento',
             descricao: 'Adicionar evento na agenda',
             icone: <FaCalendarPlus size={30} />,
-            link: route('admin.eventos.create'), // Rota que criamos antes
+            link: route('admin.eventos.create'),
             cor: 'bg-orange-600'
         },
         {
@@ -23,7 +23,8 @@ export default function Dashboard({ auth }) {
             titulo: 'Escrever Carta',
             descricao: 'Atualizar palavra do procurador',
             icone: <FaPenFancy size={30} />,
-            link: route('admin.carta.create'),
+            // CORREÇÃO AQUI: mudou de 'admin.carta.create' para 'admin.cartas.create'
+            link: route('admin.cartas.create'), 
             cor: 'bg-red-700'
         }
     ];

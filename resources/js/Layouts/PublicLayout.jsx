@@ -1,87 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { Head, Link } from '@inertiajs/react'; // Adicionei Link aqui para evitar erros se usado
-import { FaAdjust, FaPlus, FaMinus, FaRedo, FaWheelchair } from 'react-icons/fa';
+import React from 'react';
+import { Link, usePage } from '@inertiajs/react';
 
 export default function PublicLayout({ children, title }) {
-    // === ESTADOS ===
-    // Tenta ler do localStorage ou usa o padrão
-    const [darkMode, setDarkMode] = useState(() => {
-        return localStorage.getItem('theme') === 'dark';
-    });
-
-    const [fontSize, setFontSize] = useState(() => {
-        return parseInt(localStorage.getItem('fontSize')) || 100; // 100%
-    });
-
-    const [menuOpen, setMenuOpen] = useState(false);
-
-    // === EFEITOS (Aplicam as mudanças) ===
-    
-    // 1. Aplica Dark Mode
-    useEffect(() => {
-        const root = window.document.documentElement;
-        if (darkMode) {
-            root.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            root.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        }
-    }, [darkMode]);
-
-    // 2. Aplica Tamanho da Fonte (Aumenta o % do HTML root)
-    useEffect(() => {
-        const root = window.document.documentElement;
-        root.style.fontSize = `${fontSize}%`;
-        localStorage.setItem('fontSize', fontSize);
-    }, [fontSize]);
-
-    // === FUNÇÕES DE CONTROLE ===
-    const toggleTheme = () => setDarkMode(!darkMode);
-    const increaseFont = () => setFontSize(prev => Math.min(prev + 10, 130)); // Max 130%
-    const decreaseFont = () => setFontSize(prev => Math.max(prev - 10, 90));  // Min 90%
-    const resetFont = () => setFontSize(100);
+    const { auth } = usePage().props;
 
     return (
-        <div className={`min-h-screen font-sans antialiased transition-colors duration-300 ${darkMode ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
-            {title && <Head title={title} />}
+        <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+            
+            {/* CABEÇALHO PADRÃO (Para todas as páginas) */}
+            <header className="bg-blue-900 dark:bg-blue-950 text-white shadow-md">
+                <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+                    {/* Logotipo / Nome */}
+                    <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-900 font-bold shadow-sm">
+                            PGM
+                        </div>
+                        <div className="hidden sm:block">
+                            <h1 className="text-lg font-bold leading-tight">Procuradoria Geral</h1>
+                            <p className="text-xs text-blue-200">Município da Serra</p>
+                        </div>
+                    </Link>
 
-            {/* Conteúdo da Página */}
-            <main>
+                    {/* Navegação / Login */}
+                    <nav className="flex items-center gap-6">
+                        <Link href="/" className="text-sm font-medium hover:text-blue-200 transition hidden md:block">
+                            Início
+                        </Link>
+                        
+                        {auth.user ? (
+                            <Link href="/dashboard" className="px-4 py-2 bg-blue-700 hover:bg-blue-600 rounded text-sm font-semibold transition shadow-sm border border-blue-600">
+                                Painel Administrativo
+                            </Link>
+                        ) : (
+                            <Link href={route('login')} className="text-sm font-semibold hover:text-white text-blue-100 underline decoration-blue-400 hover:decoration-white transition">
+                                Acesso Restrito
+                            </Link>
+                        )}
+                    </nav>
+                </div>
+            </header>
+
+            {/* CONTEÚDO DA PÁGINA */}
+            <main className="flex-grow">
+                {title && (
+                   <head>
+                       <title>{title}</title>
+                   </head>
+                )}
                 {children}
             </main>
 
-            {/* === WIDGET DE ACESSIBILIDADE FLUTUANTE === */}
-            <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-2">
-                
-                {/* Menu de Opções (Só aparece se aberto) */}
-                {menuOpen && (
-                    <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-xl mb-2 flex flex-col gap-2 border border-gray-200 dark:border-gray-700">
-                        <button onClick={toggleTheme} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-bold text-gray-700 dark:text-gray-200" title="Alternar Tema">
-                            <FaAdjust /> {darkMode ? 'Modo Claro' : 'Modo Escuro'}
-                        </button>
-                        <hr className="dark:border-gray-600" />
-                        <button onClick={increaseFont} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-200" title="Aumentar Fonte">
-                            <FaPlus size={12} /> Aumentar Texto
-                        </button>
-                        <button onClick={decreaseFont} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-200" title="Diminuir Fonte">
-                            <FaMinus size={12} /> Diminuir Texto
-                        </button>
-                        <button onClick={resetFont} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-200" title="Resetar Fonte">
-                            <FaRedo size={12} /> Resetar Padrão
-                        </button>
-                    </div>
-                )}
-
-                {/* Botão Principal (Abre/Fecha) */}
-                <button 
-                    onClick={() => setMenuOpen(!menuOpen)}
-                    className="bg-blue-900 dark:bg-blue-600 text-white p-4 rounded-full shadow-lg hover:scale-110 transition-transform focus:outline-none focus:ring-4 ring-blue-300"
-                    title="Acessibilidade"
-                >
-                    <FaWheelchair size={24} />
-                </button>
-            </div>
+            {/* RODAPÉ PADRÃO */}
+            <footer className="bg-gray-800 dark:bg-black text-gray-400 py-8 text-center border-t border-gray-700">
+                <div className="container mx-auto px-4">
+                    <p className="text-sm">&copy; {new Date().getFullYear()} Procuradoria Geral do Município da Serra.</p>
+                    <p className="text-xs mt-2 text-gray-500">Compromisso com a Justiça e Transparência.</p>
+                </div>
+            </footer>
         </div>
     );
 }

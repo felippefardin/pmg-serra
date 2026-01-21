@@ -10,7 +10,6 @@ export default function Index({ lista }) {
             </header>
             
             <div className="container mx-auto px-4 py-8">
-                {/* Verifica se a lista está vazia */}
                 {lista.length === 0 ? (
                     <div className="text-center text-gray-500 py-10">
                         <p>Nenhuma notícia publicada ainda.</p>
@@ -20,8 +19,6 @@ export default function Index({ lista }) {
                         {lista.map((item) => (
                             <Link key={item.id} href={route('noticia.show', item.id)} className="block group">
                                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-xl transition overflow-hidden border border-gray-100 dark:border-gray-700 h-full flex flex-col">
-                                    
-                                    {/* Imagem */}
                                     <div className="h-48 bg-gray-200 overflow-hidden">
                                         {item.imagem_destaque ? (
                                             <img 
@@ -35,8 +32,6 @@ export default function Index({ lista }) {
                                             </div>
                                         )}
                                     </div>
-                                    
-                                    {/* Conteúdo */}
                                     <div className="p-4 flex flex-col flex-grow">
                                         <span className="text-xs text-indigo-500 font-bold mb-1">
                                             {new Date(item.created_at).toLocaleDateString()}
