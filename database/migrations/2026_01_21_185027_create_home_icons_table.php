@@ -6,25 +6,35 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up()
-{
-    Schema::create('home_icons', function (Blueprint $table) {
-        $table->id();
-        $table->string('label');       // Ex: Procuradores
-        $table->string('icone');       // Ex: FaUserTie (Nome do ícone)
-        $table->string('link');        // Ex: /procuradores
-        $table->string('cor');         // Ex: bg-blue-600
-        $table->boolean('ativo')->default(true);
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('home_icons', function (Blueprint $table) {
+            $table->id();
+            $table->string('label');       
+            $table->string('icone');       
+            $table->string('cor');         
+            
+            $table->string('titulo');      
+            $table->text('conteudo');      
+            
+            // Funcionamento
+            $table->string('horario')->nullable(); 
+            $table->string('dias')->nullable();    
+            
+            // Contatos
+            $table->string('telefone')->nullable();
+            $table->string('whatsapp')->nullable(); // Novo
+            $table->string('email')->nullable();
+            $table->string('endereco')->nullable();
+            
+            // Link Extra
+            $table->string('link_externo')->nullable(); // Novo
 
-    /**
-     * Reverse the migrations.
-     */
+            $table->boolean('ativo')->default(true);
+            $table->timestamps();
+        });
+    }
+
     public function down(): void
     {
         Schema::dropIfExists('home_icons');

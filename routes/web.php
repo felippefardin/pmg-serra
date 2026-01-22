@@ -1,16 +1,18 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SiteController;
+use App\Http\Controllers\HomeIconController;
+use App\Http\Controllers\AdminController; // Importante para as rotas admin funcionarem
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\SiteController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\HomeIconController;
 
 // ==========================================
 // ÁREA PÚBLICA (Qualquer pessoa vê)
 // ==========================================
 
+// Página Inicial
 Route::get('/', [SiteController::class, 'home'])->name('home');
 
 // Listagens (Grid de itens)
@@ -25,7 +27,7 @@ Route::get('/evento/{id}', [SiteController::class, 'showEvento'])->name('evento.
 Route::get('/noticia/{id}', [SiteController::class, 'showNoticia'])->name('noticia.show');
 Route::get('/carta/{id}', [SiteController::class, 'showCarta'])->name('carta.show');
 
-// Visualização do Ícone Dinâmico (Texto/Informação)
+// Visualização do Ícone Dinâmico (Texto/Informação/Contatos)
 Route::get('/informacao/{id}', [HomeIconController::class, 'showPublic'])->name('icone.show');
 
 // ==========================================

@@ -8,7 +8,6 @@ use App\Models\HomeIcon;
 
 class HomeIconController extends Controller
 {
-    // 1. LISTAGEM NO ADMIN (Corrigido para não redirecionar mais)
     public function index()
     {
         return Inertia::render('Admin/HomeIcons/Index', [
@@ -16,7 +15,6 @@ class HomeIconController extends Controller
         ]);
     }
 
-    // 2. VISUALIZAÇÃO PÚBLICA (Página com Título e Texto)
     public function showPublic($id)
     {
         $icon = HomeIcon::findOrFail($id);
@@ -34,10 +32,18 @@ class HomeIconController extends Controller
     public function store(Request $request)
     {
         HomeIcon::create($request->validate([
-            'label' => 'required',
-            'icone' => 'required',
-            'link' => 'required',
-            'cor' => 'required'
+            'label' => 'required|string|max:255',
+            'icone' => 'required|string|max:255',
+            'cor' => 'required|string|max:255',
+            'titulo' => 'required|string|max:255',
+            'conteudo' => 'required|string',
+            'horario' => 'nullable|string|max:255',
+            'dias' => 'nullable|string|max:255',
+            'telefone' => 'nullable|string|max:255',
+            'whatsapp' => 'nullable|string|max:255',     // Novo
+            'email' => 'nullable|email|max:255',
+            'endereco' => 'nullable|string|max:255',
+            'link_externo' => 'nullable|url|max:255',     // Novo (validação de URL)
         ]));
         
         return redirect()->route('home')->with('message', 'Ícone criado com sucesso!');
@@ -55,10 +61,18 @@ class HomeIconController extends Controller
     {
         $icon = HomeIcon::findOrFail($id);
         $icon->update($request->validate([
-            'label' => 'required',
-            'icone' => 'required',
-            'link' => 'required',
-            'cor' => 'required'
+            'label' => 'required|string|max:255',
+            'icone' => 'required|string|max:255',
+            'cor' => 'required|string|max:255',
+            'titulo' => 'required|string|max:255',
+            'conteudo' => 'required|string',
+            'horario' => 'nullable|string|max:255',
+            'dias' => 'nullable|string|max:255',
+            'telefone' => 'nullable|string|max:255',
+            'whatsapp' => 'nullable|string|max:255',     // Novo
+            'email' => 'nullable|email|max:255',
+            'endereco' => 'nullable|string|max:255',
+            'link_externo' => 'nullable|url|max:255',     // Novo
         ]));
 
         return redirect()->route('home')->with('message', 'Ícone atualizado com sucesso!');
