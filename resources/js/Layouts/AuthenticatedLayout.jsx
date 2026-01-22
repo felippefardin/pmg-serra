@@ -28,6 +28,11 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
                                     <span className="text-black dark:text-white font-bold">Dashboard</span>
                                 </NavLink>
+                                
+                                {/* Link para Cadastrar Usuário (Desktop) */}
+                                <NavLink href={route('admin.users.create')} active={route().current('admin.users.create')}>
+                                    <span className="text-black dark:text-white font-bold">Cadastrar Usuário</span>
+                                </NavLink>
                             </div>
                         </div>
 
@@ -84,6 +89,12 @@ export default function Authenticated({ user, header, children }) {
                         <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
                             <span className="text-black dark:text-white font-bold">Dashboard</span>
                         </ResponsiveNavLink>
+                        
+                        {/* Link para Cadastrar Usuário (Mobile) */}
+                        <ResponsiveNavLink href={route('admin.users.create')} active={route().current('admin.users.create')}>
+                            <span className="text-black dark:text-white font-bold">Cadastrar Usuário</span>
+                        </ResponsiveNavLink>
+
                         <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
                              <span className="text-sm text-black dark:text-white font-bold">Acessibilidade</span>
                              <div className="flex gap-2">

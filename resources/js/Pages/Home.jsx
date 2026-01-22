@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
-import { FaUserTie, FaUsers, FaCalendarAlt, FaNewspaper, FaScroll } from 'react-icons/fa';
+import { FaUserTie, FaUsers, FaCalendarAlt, FaNewspaper, FaScroll, FaTimes, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaEnvelope, FaClock, FaExternalLinkAlt, FaLink } from 'react-icons/fa';
 import * as FaIcons from 'react-icons/fa'; 
 import PublicLayout from '@/Layouts/PublicLayout';
+import Modal from '@/Components/Modal';
 
 export default function Home({ titulo, descricao, dynamicIcons }) {
     const { auth } = usePage().props;
+    const [selectedIcon, setSelectedIcon] = useState(null);
 
     // 1. ÍCONES FIXOS (Originais)
     const staticItems = [
@@ -16,18 +18,23 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
         { label: 'Carta do Procurador', iconComponent: <FaScroll size={40} />, link: '/cartas', color: 'bg-red-700' },
     ];
 
-    const handleDelete = (id) => {
+    const handleDelete = (e, id) => {
+        e.stopPropagation(); // Impede abrir o modal ao clicar no deletar
         if (confirm('Tem certeza que deseja remover este ícone?')) {
             router.delete(route('admin.home-icons.destroy', id));
         }
     };
 
-    const renderDynamicIcon = (iconName) => {
+    const renderDynamicIcon = (iconName, size = 40) => {
         if (iconName && FaIcons[iconName]) {
             const IconComp = FaIcons[iconName];
-            return <IconComp size={40} />;
+            return <IconComp size={size} />;
         }
-        return <FaIcons.FaQuestionCircle size={40} />;
+        return <FaIcons.FaQuestionCircle size={size} />;
+    };
+
+    const closeModal = () => {
+        setSelectedIcon(null);
     };
 
     return (
@@ -54,7 +61,7 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                 </div>
             </div>
 
-            {/* SEÇÃO 1: ÍCONES FIXOS (DIV ORIGINAL) */}
+            {/* SEÇÃO 1: ÍCONES FIXOS (LINKS NORMAIS) */}
             <div className="py-12 bg-gray-50 dark:bg-gray-900 transition-colors">
                 <div className="container mx-auto px-4">
                     <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-6 border-l-4 border-blue-600 pl-3">
@@ -85,8 +92,7 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                 </div>
             </div>
 
-            {/* SEÇÃO 2: ÍCONES DINÂMICOS (NOVA DIV) */}
-            {/* Só exibe se houver ícones cadastrados */}
+            {/* SEÇÃO 2: ÍCONES DINÂMICOS (ABREM MODAL) */}
             {dynamicIcons && dynamicIcons.length > 0 && (
                 <div className="py-12 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 transition-colors">
                     <div className="container mx-auto px-4">
@@ -98,10 +104,10 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                             {dynamicIcons.map((item, index) => (
                                 <div key={index} className="relative group h-full">
                                     
-                                    {/* Link aponta para a nova rota 'icone.show' passando o ID */}
-                                    <Link 
-                                        href={route('icone.show', item.id)} 
-                                        className="block bg-gray-50 dark:bg-gray-900 rounded-xl shadow hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border border-gray-200 dark:border-gray-700 h-full"
+                                    {/* DIV clicável substitui o Link */}
+                                    <div 
+                                        onClick={() => setSelectedIcon(item)}
+                                        className="cursor-pointer block bg-gray-50 dark:bg-gray-900 rounded-xl shadow hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border border-gray-200 dark:border-gray-700 h-full"
                                     >
                                         <div className={`${item.cor} h-24 flex items-center justify-center text-white transition-colors`}>
                                             {renderDynamicIcon(item.icone)}
@@ -111,22 +117,23 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                                                 {item.label}
                                             </h4>
                                             <span className="text-sm text-gray-500 dark:text-gray-400 font-medium group-hover:underline">
-                                                Ler mais &rarr;
+                                                Ver Detalhes &rarr;
                                             </span>
                                         </div>
-                                    </Link>
+                                    </div>
 
                                     {/* Botões de Admin (Só aparecem se logado) */}
                                     {auth.user && (
                                         <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
                                             <Link 
                                                 href={route('admin.home-icons.edit', item.id)}
+                                                onClick={(e) => e.stopPropagation()} 
                                                 className="bg-white text-blue-600 p-2 rounded-full shadow-lg hover:bg-blue-50 transition transform hover:scale-110"
                                             >
                                                 <FaIcons.FaPen size={12} />
                                             </Link>
                                             <button 
-                                                onClick={() => handleDelete(item.id)}
+                                                onClick={(e) => handleDelete(e, item.id)}
                                                 className="bg-white text-red-600 p-2 rounded-full shadow-lg hover:bg-red-50 transition transform hover:scale-110"
                                             >
                                                 <FaIcons.FaTrash size={12} />
@@ -140,9 +147,8 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                 </div>
             )}
 
-            {/* SEÇÃO: O QUE FAZEMOS (MANTIDA) */}
+            {/* SEÇÃO: O QUE FAZEMOS */}
             <div className="bg-white dark:bg-gray-800 py-16 border-t border-gray-200 dark:border-gray-700 transition-colors">
-                 {/* ... conteúdo igual ao anterior ... */}
                  <div className="container mx-auto px-6 lg:px-8 max-w-5xl">
                     <div className="text-center mb-10">
                         <h3 className="text-3xl font-extrabold text-blue-900 dark:text-white inline-block border-b-4 border-blue-600 pb-2">
@@ -153,16 +159,129 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                     <div className="space-y-6 text-lg text-gray-700 dark:text-gray-300 leading-relaxed text-justify">
                         <p>
                             A Procuradoria Geral do Município da Serra — <strong>PROGER</strong>, tem sua estrutura, funcionalidade e atribuições traçadas na Lei Municipal nº 2.356/2000 — Estrutura Organizacional do Poder Executivo e na Lei Municipal nº 5.539/2022 – Lei Orgânica da Procuradoria Geral do Município, tendo como objetivo promover a defesa, em juízo ou fora dele, dos direitos e interesses do Município.
-                        </p>
-                        <p>
-                            Também promove o exame de ordens e sentenças judiciais e orienta o prefeito, os secretários e as demais autoridades. É sua função propor ação civil pública e zelar pela fiel observância e aplicação das leis, decretos, portarias e regulamentos existentes.
-                        </p>
-                        <p>
-                            É ainda seu dever aprovar previamente as minutas dos editais de licitação, contratos, acordos, convênios, ajustes e quaisquer outros instrumentos em que haja um acordo de vontades para formação de vínculo obrigacional, oneroso ou não, qualquer que seja a denominação dada aos mesmos, celebrados por quaisquer órgãos ou entidades municipais.
-                        </p>
-                    </div>
+                        </p>Também promove o exame de ordens e sentenças judiciais e orienta o prefeito, os secretários e as demais autoridades. É sua função propor ação civil pública e zelar pela fiel observância e aplicação das leis, decretos, portarias e regulamentos existentes.
+                    </div>É ainda seu dever aprovar previamente as minutas dos editais de licitação, contratos, acordos, convênios, ajustes e quaisquer outros instrumentos em que haja um acordo de vontades para formação de vínculo obrigacional, oneroso ou não, qualquer que seja a denominação dada aos mesmos, celebrados por quaisquer órgãos ou entidades municipais.
                 </div>
             </div>
+
+            {/* MODAL DE INFORMAÇÕES */}
+            <Modal show={!!selectedIcon} onClose={closeModal} maxWidth="2xl">
+                {selectedIcon && (
+                    <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                        {/* Cabeçalho do Modal */}
+                        <div className={`${selectedIcon.cor} p-6 flex items-center justify-between rounded-t-lg`}>
+                            <div className="flex items-center gap-4 text-white">
+                                <div className="p-2 bg-white/20 rounded-full">
+                                    {renderDynamicIcon(selectedIcon.icone, 32)}
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold">{selectedIcon.titulo || selectedIcon.label}</h2>
+                                    <p className="text-white/80 text-sm font-medium">{selectedIcon.label}</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={closeModal} 
+                                className="text-white hover:bg-white/20 p-2 rounded-full transition"
+                            >
+                                <FaTimes size={24} />
+                            </button>
+                        </div>
+
+                        {/* Corpo do Modal */}
+                        <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+                            
+                            {/* Conteúdo Principal */}
+                            {selectedIcon.conteudo && (
+                                <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                                    {selectedIcon.conteudo}
+                                </div>
+                            )}
+
+                            {/* Links Externos (LISTA NO MODEL) */}
+                            {selectedIcon.link_externo && Array.isArray(selectedIcon.link_externo) && selectedIcon.link_externo.length > 0 && (
+                                <div className="mt-4">
+                                    <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                                        <FaLink className="text-blue-500" /> Links Úteis
+                                    </h4>
+                                    <ul className="space-y-2">
+                                        {selectedIcon.link_externo.map((link, index) => (
+                                            <li key={index}>
+                                                <a 
+                                                    href={link.url} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition group"
+                                                >
+                                                    <span className="font-medium text-blue-700 dark:text-blue-300 group-hover:underline">
+                                                        {link.nome}
+                                                    </span>
+                                                    <FaExternalLinkAlt className="text-gray-400 group-hover:text-blue-500" size={12} />
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {/* Informações Extras (Grid) */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                                
+                                {/* Horário e Dias */}
+                                {(selectedIcon.horario || selectedIcon.dias) && (
+                                    <div className="col-span-1 md:col-span-2 flex items-start gap-3">
+                                        <FaClock className="text-blue-500 mt-1 flex-shrink-0" />
+                                        <div>
+                                            <h4 className="font-semibold text-gray-800 dark:text-white text-sm">Funcionamento</h4>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                {selectedIcon.dias && <span>{selectedIcon.dias}</span>}
+                                                {selectedIcon.dias && selectedIcon.horario && <span> • </span>}
+                                                {selectedIcon.horario && <span>{selectedIcon.horario}</span>}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Contatos */}
+                                {selectedIcon.endereco && (
+                                    <div className="flex items-start gap-3 col-span-1 md:col-span-2">
+                                        <FaMapMarkerAlt className="text-red-500 mt-1 flex-shrink-0" />
+                                        <div>
+                                            <h4 className="font-semibold text-gray-800 dark:text-white text-sm">Endereço</h4>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">{selectedIcon.endereco}</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {selectedIcon.telefone && (
+                                    <div className="flex items-center gap-3">
+                                        <FaPhone className="text-green-600 flex-shrink-0" />
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">{selectedIcon.telefone}</span>
+                                    </div>
+                                )}
+
+                                {selectedIcon.whatsapp && (
+                                    <div className="flex items-center gap-3">
+                                        <FaWhatsapp className="text-green-500 flex-shrink-0" />
+                                        <a href={`https://wa.me/${selectedIcon.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">
+                                            {selectedIcon.whatsapp}
+                                        </a>
+                                    </div>
+                                )}
+
+                                {selectedIcon.email && (
+                                    <div className="flex items-center gap-3 md:col-span-2">
+                                        <FaEnvelope className="text-gray-500 flex-shrink-0" />
+                                        <a href={`mailto:${selectedIcon.email}`} className="text-sm text-blue-600 hover:underline">
+                                            {selectedIcon.email}
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+
+                        </div>
+                    </div>
+                )}
+            </Modal>
 
         </PublicLayout>
     );

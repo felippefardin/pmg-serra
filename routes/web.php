@@ -3,7 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\HomeIconController;
-use App\Http\Controllers\AdminController; // Importante para as rotas admin funcionarem
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\UserController; // <--- ADICIONADO: Importação necessária
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,6 +39,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Painel Principal
     Route::get('/dashboard', function () { return Inertia::render('Dashboard'); })->name('dashboard');
+
+    // === GERENCIAR USUÁRIOS (CRIAR LOGIN) ===
+    // Estas são as rotas que estavam gerando o erro 500
+    Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
+    Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
 
     // === GERENCIAR NOTÍCIAS ===
     Route::get('/admin/noticias/nova', [AdminController::class, 'createNoticia'])->name('admin.noticias.create');
@@ -80,8 +86,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // === GERENCIAR ÍCONES DA HOME ===
-    // Cria rotas admin.home-icons.index, create, store, edit, update, destroy
-    // O 'except show' evita conflito com a rota pública de visualização
     Route::resource('admin/home-icons', HomeIconController::class)
         ->names('admin.home-icons')
         ->except(['show']);

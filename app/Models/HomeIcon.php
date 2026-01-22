@@ -21,4 +21,9 @@ class HomeIcon extends Model
         'link_externo', 
         'ativo'
     ];
+
+    
+    protected $casts = [
+        'link_externo' => 'array',
+    ];
 }

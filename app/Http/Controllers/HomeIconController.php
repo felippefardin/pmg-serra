@@ -31,7 +31,8 @@ class HomeIconController extends Controller
 
     public function store(Request $request)
     {
-        HomeIcon::create($request->validate([
+        // Validação atualizada para aceitar Array de Links
+        $data = $request->validate([
             'label' => 'required|string|max:255',
             'icone' => 'required|string|max:255',
             'cor' => 'required|string|max:255',
@@ -40,15 +41,18 @@ class HomeIconController extends Controller
             'horario' => 'nullable|string|max:255',
             'dias' => 'nullable|string|max:255',
             'telefone' => 'nullable|string|max:255',
-            'whatsapp' => 'nullable|string|max:255',     // Novo
+            'whatsapp' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
-            'endereco' => 'nullable|string|max:255',
-            'link_externo' => 'nullable|url|max:255',     // Novo (validação de URL)
-        ]));
+            'endereco' => 'nullable|string|max:255',                  
+            'link_externo' => 'nullable|array', 
+            'link_externo.*.nome' => 'required|string|max:255', 
+            'link_externo.*.url' => 'required|url', 
+        ]);
+        
+        HomeIcon::create($data);
         
         return redirect()->route('home')->with('message', 'Ícone criado com sucesso!');
     }
-
     public function edit($id)
     {
         $icon = HomeIcon::findOrFail($id);
@@ -60,7 +64,8 @@ class HomeIconController extends Controller
     public function update(Request $request, $id)
     {
         $icon = HomeIcon::findOrFail($id);
-        $icon->update($request->validate([
+        
+        $data = $request->validate([
             'label' => 'required|string|max:255',
             'icone' => 'required|string|max:255',
             'cor' => 'required|string|max:255',
@@ -69,11 +74,15 @@ class HomeIconController extends Controller
             'horario' => 'nullable|string|max:255',
             'dias' => 'nullable|string|max:255',
             'telefone' => 'nullable|string|max:255',
-            'whatsapp' => 'nullable|string|max:255',     // Novo
+            'whatsapp' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
-            'endereco' => 'nullable|string|max:255',
-            'link_externo' => 'nullable|url|max:255',     // Novo
-        ]));
+            'endereco' => 'nullable|string|max:255',             
+            'link_externo' => 'nullable|array',
+            'link_externo.*.nome' => 'required|string|max:255',
+            'link_externo.*.url' => 'required|url',
+        ]);
+
+        $icon->update($data);
 
         return redirect()->route('home')->with('message', 'Ícone atualizado com sucesso!');
     }

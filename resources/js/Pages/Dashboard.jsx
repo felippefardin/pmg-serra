@@ -1,7 +1,7 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-import { FaCalendarPlus, FaNewspaper, FaPenFancy, FaHome, FaUserTie, FaUsers, FaTh } from 'react-icons/fa';
+import { FaCalendarPlus, FaNewspaper, FaPenFancy, FaHome, FaUserTie, FaUsers, FaTh, FaUserPlus } from 'react-icons/fa';
 
 export default function Dashboard({ auth }) {
     const cards = [
@@ -40,14 +40,20 @@ export default function Dashboard({ auth }) {
             link: route('admin.assessores.create'), 
             cor: 'bg-green-600'
         },
-        // --- CARTÃO ATUALIZADO ---
         {
             titulo: 'Gerenciar Ícones',
-            descricao: 'Ver lista e editar menu', // Ajustei a descrição
+            descricao: 'Ver lista e editar menu',
             icone: <FaTh size={30} />,
-            // Mude de .create para .index
             link: route('admin.home-icons.index'), 
             cor: 'bg-gray-600'
+        },
+        // --- NOVO CARTÃO ADICIONADO AQUI ---
+        {
+            titulo: 'Novo Usuário',
+            descricao: 'Criar login de acesso',
+            icone: <FaUserPlus size={30} />,
+            link: route('admin.users.create'), 
+            cor: 'bg-teal-600'
         },
     ];
 
