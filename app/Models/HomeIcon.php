@@ -12,6 +12,7 @@ class HomeIcon extends Model
         'cor',
         'titulo',
         'conteudo',
+        'imagens', // Adicionado
         'horario',
         'dias',
         'telefone',
@@ -22,8 +23,8 @@ class HomeIcon extends Model
         'ativo'
     ];
 
-    
     protected $casts = [
         'link_externo' => 'array',
+        'imagens' => 'array', // Adicionado
     ];
 }

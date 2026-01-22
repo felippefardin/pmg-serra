@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm, Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { FaTrash, FaPlus } from 'react-icons/fa'; // Importando ícones para UI
+import { FaTrash, FaPlus, FaImages } from 'react-icons/fa'; // Adicionado FaImages
 
 export default function CriarIcone({ auth }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -16,7 +16,8 @@ export default function CriarIcone({ auth }) {
         whatsapp: '',
         email: '',
         endereco: '',
-        link_externo: [] // Inicializa como array vazio para múltiplos links
+        link_externo: [], // Inicializa como array vazio para múltiplos links
+        imagens: [] // Inicializa array de imagens
     });
 
     const iconOptions = [
@@ -64,7 +65,7 @@ export default function CriarIcone({ auth }) {
                 <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                         
-                        <form onSubmit={submit} className="space-y-6">
+                        <form onSubmit={submit} className="space-y-6" encType="multipart/form-data">
                             
                             {/* DADOS PRINCIPAIS */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -106,6 +107,25 @@ export default function CriarIcone({ auth }) {
                                 {errors.conteudo && <div className="text-red-500 text-sm mt-1">{errors.conteudo}</div>}
                             </div>
 
+                            {/* --- NOVA SEÇÃO DE IMAGENS --- */}
+                            <div className="border-t pt-4 dark:border-gray-700">
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                                    <FaImages className="text-blue-500" /> Galeria de Imagens
+                                </h3>
+                                <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
+                                    <label className="block font-bold text-gray-700 dark:text-gray-300 mb-2">Selecione as imagens</label>
+                                    <input 
+                                        type="file" 
+                                        multiple 
+                                        accept="image/*"
+                                        onChange={e => setData('imagens', e.target.files)} 
+                                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-200"
+                                    />
+                                    {errors.imagens && <div className="text-red-500 text-sm mt-1">{errors.imagens}</div>}
+                                </div>
+                            </div>
+                            {/* ----------------------------- */}
+
                             {/* SEÇÃO DE LINKS ÚTEIS (MÚLTIPLOS) */}
                             <div className="border-t pt-4 dark:border-gray-700">
                                 <div className="flex justify-between items-center mb-4">
@@ -125,47 +145,47 @@ export default function CriarIcone({ auth }) {
                                     )}
                                     
                                    {data.link_externo.map((link, index) => (
-    <div key={index} className="flex flex-col md:flex-row gap-3 items-start bg-white dark:bg-gray-800 p-3 rounded shadow-sm">
-        
-        {/* Campo Nome */}
-        <div className="flex-1 w-full">
-            <label className="block text-xs font-bold text-gray-500 mb-1">Nome do Link</label>
-            <input 
-                type="text" 
-                className={`w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white rounded px-2 py-1 text-sm ${errors[`link_externo.${index}.nome`] ? 'border-red-500' : ''}`}
-                value={link.nome}
-                onChange={(e) => updateLink(index, 'nome', e.target.value)}
-            />
-            {/* Exibe erro específico deste campo */}
-            {errors[`link_externo.${index}.nome`] && (
-                <div className="text-red-500 text-xs mt-1">O nome é obrigatório.</div>
-            )}
-        </div>
+                                    <div key={index} className="flex flex-col md:flex-row gap-3 items-start bg-white dark:bg-gray-800 p-3 rounded shadow-sm">
+                                        
+                                        {/* Campo Nome */}
+                                        <div className="flex-1 w-full">
+                                            <label className="block text-xs font-bold text-gray-500 mb-1">Nome do Link</label>
+                                            <input 
+                                                type="text" 
+                                                className={`w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white rounded px-2 py-1 text-sm ${errors[`link_externo.${index}.nome`] ? 'border-red-500' : ''}`}
+                                                value={link.nome}
+                                                onChange={(e) => updateLink(index, 'nome', e.target.value)}
+                                            />
+                                            {/* Exibe erro específico deste campo */}
+                                            {errors[`link_externo.${index}.nome`] && (
+                                                <div className="text-red-500 text-xs mt-1">O nome é obrigatório.</div>
+                                            )}
+                                        </div>
 
-        {/* Campo URL */}
-        <div className="flex-1 w-full">
-            <label className="block text-xs font-bold text-gray-500 mb-1">URL (Endereço)</label>
-            <input 
-                type="text" 
-                className={`w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white rounded px-2 py-1 text-sm ${errors[`link_externo.${index}.url`] ? 'border-red-500' : ''}`}
-                value={link.url}
-                onChange={(e) => updateLink(index, 'url', e.target.value)}
-            />
-             {/* Exibe erro específico deste campo */}
-            {errors[`link_externo.${index}.url`] && (
-                <div className="text-red-500 text-xs mt-1">URL inválida (use http://...).</div>
-            )}
-        </div>
+                                        {/* Campo URL */}
+                                        <div className="flex-1 w-full">
+                                            <label className="block text-xs font-bold text-gray-500 mb-1">URL (Endereço)</label>
+                                            <input 
+                                                type="text" 
+                                                className={`w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white rounded px-2 py-1 text-sm ${errors[`link_externo.${index}.url`] ? 'border-red-500' : ''}`}
+                                                value={link.url}
+                                                onChange={(e) => updateLink(index, 'url', e.target.value)}
+                                            />
+                                             {/* Exibe erro específico deste campo */}
+                                            {errors[`link_externo.${index}.url`] && (
+                                                <div className="text-red-500 text-xs mt-1">URL inválida (use http://...).</div>
+                                            )}
+                                        </div>
 
-        <button 
-            type="button" 
-            onClick={() => removeLink(index)}
-            className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded transition mt-4 md:mt-0"
-        >
-            <FaTrash size={14} />
-        </button>
-    </div>
-))}
+                                        <button 
+                                            type="button" 
+                                            onClick={() => removeLink(index)}
+                                            className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded transition mt-4 md:mt-0"
+                                        >
+                                            <FaTrash size={14} />
+                                        </button>
+                                    </div>
+                                ))}
                                 </div>
                                 {errors.link_externo && <div className="text-red-500 text-xs mt-1">{errors.link_externo}</div>}
                             </div>

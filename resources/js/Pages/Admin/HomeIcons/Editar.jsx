@@ -1,13 +1,16 @@
 import React from 'react';
 import { useForm, Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { FaTrash, FaPlus } from 'react-icons/fa';
+import { FaTrash, FaPlus, FaImages, FaUndo } from 'react-icons/fa';
 
 export default function EditarIcone({ auth, icon }) {
     // Garante que link_externo seja um array, mesmo que venha nulo ou vazio
     const initialLinks = Array.isArray(icon.link_externo) ? icon.link_externo : [];
 
-    const { data, setData, put, processing, errors } = useForm({
+    // NOTA: Usamos 'post' em vez de 'put' para permitir o upload de arquivos, 
+    // enviando _method: 'PUT' para o Laravel entender que é uma atualização.
+    const { data, setData, post, processing, errors } = useForm({
+        _method: 'PUT', 
         label: icon.label || '',
         icone: icon.icone || 'FaUserTie',
         cor: icon.cor || 'bg-blue-600',
@@ -19,7 +22,9 @@ export default function EditarIcone({ auth, icon }) {
         whatsapp: icon.whatsapp || '', 
         email: icon.email || '',
         endereco: icon.endereco || '',
-        link_externo: initialLinks 
+        link_externo: initialLinks,
+        imagens: [], // Para novas imagens
+        imagens_removidas: [] // Para armazenar caminhos das imagens a serem deletadas
     });
 
     const iconOptions = [
@@ -36,7 +41,8 @@ export default function EditarIcone({ auth, icon }) {
 
     const submit = (e) => {
         e.preventDefault();
-        put(route('admin.home-icons.update', icon.id));
+        // Usa post com a rota de update
+        post(route('admin.home-icons.update', icon.id));
     };
 
     const addLink = () => {
@@ -55,6 +61,17 @@ export default function EditarIcone({ auth, icon }) {
         setData('link_externo', newLinks);
     };
 
+    // Funções para gerenciar imagens existentes
+    const markImageForRemoval = (path) => {
+        if (!data.imagens_removidas.includes(path)) {
+            setData('imagens_removidas', [...data.imagens_removidas, path]);
+        }
+    };
+
+    const undoImageRemoval = (path) => {
+        setData('imagens_removidas', data.imagens_removidas.filter(p => p !== path));
+    };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -66,7 +83,7 @@ export default function EditarIcone({ auth, icon }) {
                 <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                         
-                        <form onSubmit={submit} className="space-y-6">
+                        <form onSubmit={submit} className="space-y-6" encType="multipart/form-data">
                             
                             {/* CAMPOS ORIGINAIS (NOME, ICONE, TITULO, CONTEUDO) */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -108,7 +125,54 @@ export default function EditarIcone({ auth, icon }) {
                                 {errors.conteudo && <div className="text-red-500 text-sm">{errors.conteudo}</div>}
                             </div>
 
-                            {/* SEÇÃO DE LINKS MÚLTIPLOS (EDITAR) */}
+                            {/* --- SEÇÃO DE IMAGENS (EDITAR) --- */}
+                            <div className="border-t pt-4 dark:border-gray-700">
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                                    <FaImages className="text-blue-500" /> Galeria de Imagens
+                                </h3>
+                                
+                                {/* Lista de imagens existentes */}
+                                {icon.imagens && icon.imagens.length > 0 && (
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                        {icon.imagens.map((img, idx) => {
+                                            const isRemoved = data.imagens_removidas.includes(img);
+                                            return (
+                                                <div key={idx} className={`relative group border rounded-lg overflow-hidden ${isRemoved ? 'opacity-50 grayscale' : ''}`}>
+                                                    <img src={`/storage/${img}`} alt={`Imagem ${idx}`} className="w-full h-32 object-cover" />
+                                                    
+                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                                                        {isRemoved ? (
+                                                            <button type="button" onClick={() => undoImageRemoval(img)} className="bg-green-600 text-white p-2 rounded-full text-xs flex items-center gap-1 hover:bg-green-700 transition">
+                                                                <FaUndo /> Restaurar
+                                                            </button>
+                                                        ) : (
+                                                            <button type="button" onClick={() => markImageForRemoval(img)} className="bg-red-600 text-white p-2 rounded-full text-xs flex items-center gap-1 hover:bg-red-700 transition">
+                                                                <FaTrash /> Remover
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                    {isRemoved && <div className="absolute top-0 right-0 bg-red-600 text-white text-xs px-2 py-1">Excluída</div>}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+
+                                {/* Input para novas imagens */}
+                                <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
+                                    <label className="block font-bold text-gray-700 dark:text-gray-300 mb-2">Adicionar Novas Imagens</label>
+                                    <input 
+                                        type="file" 
+                                        multiple 
+                                        accept="image/*"
+                                        onChange={e => setData('imagens', e.target.files)} 
+                                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-200"
+                                    />
+                                </div>
+                            </div>
+                            {/* --------------------------------- */}
+
+                            {/* SEÇÃO DE LINKS MÚLTIPLOS */}
                             <div className="border-t pt-4 dark:border-gray-700">
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Links Úteis e Externos</h3>
@@ -127,51 +191,49 @@ export default function EditarIcone({ auth, icon }) {
                                     )}
                                     
                                     {data.link_externo.map((link, index) => (
-    <div key={index} className="flex flex-col md:flex-row gap-3 items-start bg-white dark:bg-gray-800 p-3 rounded shadow-sm">
-        
-        {/* Campo Nome */}
-        <div className="flex-1 w-full">
-            <label className="block text-xs font-bold text-gray-500 mb-1">Nome do Link</label>
-            <input 
-                type="text" 
-                className={`w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white rounded px-2 py-1 text-sm ${errors[`link_externo.${index}.nome`] ? 'border-red-500' : ''}`}
-                value={link.nome}
-                onChange={(e) => updateLink(index, 'nome', e.target.value)}
-            />
-            {/* Exibe erro específico deste campo */}
-            {errors[`link_externo.${index}.nome`] && (
-                <div className="text-red-500 text-xs mt-1">O nome é obrigatório.</div>
-            )}
-        </div>
+                                        <div key={index} className="flex flex-col md:flex-row gap-3 items-start bg-white dark:bg-gray-800 p-3 rounded shadow-sm">
+                                            
+                                            {/* Campo Nome */}
+                                            <div className="flex-1 w-full">
+                                                <label className="block text-xs font-bold text-gray-500 mb-1">Nome do Link</label>
+                                                <input 
+                                                    type="text" 
+                                                    className={`w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white rounded px-2 py-1 text-sm ${errors[`link_externo.${index}.nome`] ? 'border-red-500' : ''}`}
+                                                    value={link.nome}
+                                                    onChange={(e) => updateLink(index, 'nome', e.target.value)}
+                                                />
+                                                {errors[`link_externo.${index}.nome`] && (
+                                                    <div className="text-red-500 text-xs mt-1">O nome é obrigatório.</div>
+                                                )}
+                                            </div>
 
-        {/* Campo URL */}
-        <div className="flex-1 w-full">
-            <label className="block text-xs font-bold text-gray-500 mb-1">URL (Endereço)</label>
-            <input 
-                type="text" 
-                className={`w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white rounded px-2 py-1 text-sm ${errors[`link_externo.${index}.url`] ? 'border-red-500' : ''}`}
-                value={link.url}
-                onChange={(e) => updateLink(index, 'url', e.target.value)}
-            />
-             {/* Exibe erro específico deste campo */}
-            {errors[`link_externo.${index}.url`] && (
-                <div className="text-red-500 text-xs mt-1">URL inválida (use http://...).</div>
-            )}
-        </div>
+                                            {/* Campo URL */}
+                                            <div className="flex-1 w-full">
+                                                <label className="block text-xs font-bold text-gray-500 mb-1">URL (Endereço)</label>
+                                                <input 
+                                                    type="text" 
+                                                    className={`w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white rounded px-2 py-1 text-sm ${errors[`link_externo.${index}.url`] ? 'border-red-500' : ''}`}
+                                                    value={link.url}
+                                                    onChange={(e) => updateLink(index, 'url', e.target.value)}
+                                                />
+                                                {errors[`link_externo.${index}.url`] && (
+                                                    <div className="text-red-500 text-xs mt-1">URL inválida (use http://...).</div>
+                                                )}
+                                            </div>
 
-        <button 
-            type="button" 
-            onClick={() => removeLink(index)}
-            className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded transition mt-4 md:mt-0"
-        >
-            <FaTrash size={14} />
-        </button>
-    </div>
-))}
+                                            <button 
+                                                type="button" 
+                                                onClick={() => removeLink(index)}
+                                                className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded transition mt-4 md:mt-0"
+                                            >
+                                                <FaTrash size={14} />
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
 
-                            {/* FUNCIONAMENTO E CONTATOS IGUAIS AO ORIGINAL, SEM O LINK EXTERNO ANTIGO */}
+                            {/* FUNCIONAMENTO E CONTATOS */}
                             <div className="border-t pt-4 dark:border-gray-700">
                                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Funcionamento e Contatos</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

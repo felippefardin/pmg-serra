@@ -3,8 +3,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import * as FaIcons from 'react-icons/fa';
-// Importando ícones específicos usados dentro do detalhe do Modal
-import { FaTimes, FaLink, FaClock, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaEnvelope, FaExternalLinkAlt } from 'react-icons/fa';
+// Importando ícones específicos usados dentro do detalhe do Modal, incluindo FaImages
+import { FaTimes, FaLink, FaClock, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaEnvelope, FaExternalLinkAlt, FaImages } from 'react-icons/fa';
 
 export default function Index({ auth, icons }) {
     
@@ -70,7 +70,15 @@ export default function Index({ auth, icons }) {
                                                 {/* Renderiza pequeno na tabela */}
                                                 {renderIcon(icon.icone, 24)}
                                             </td>
-                                            <td className="p-3 font-bold">{icon.label}</td>
+                                            <td className="p-3 font-bold">
+                                                {icon.label}
+                                                {/* Indicador visual de imagens na tabela */}
+                                                {icon.imagens && icon.imagens.length > 0 && (
+                                                    <span className="ml-2 inline-flex items-center gap-1 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 text-xs px-2 py-0.5 rounded-full" title={`${icon.imagens.length} imagens`}>
+                                                        <FaImages size={10} /> {icon.imagens.length}
+                                                    </span>
+                                                )}
+                                            </td>
                                             <td className="p-3 text-sm text-gray-600 dark:text-gray-400">{icon.titulo}</td>
                                             <td className="p-3 text-right space-x-2">
                                                 
@@ -144,6 +152,35 @@ export default function Index({ auth, icons }) {
                             {selectedIcon.conteudo && (
                                 <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
                                     {selectedIcon.conteudo}
+                                </div>
+                            )}
+
+                            {/* Galeria de Imagens (NOVO) */}
+                            {selectedIcon.imagens && selectedIcon.imagens.length > 0 && (
+                                <div className="mt-4">
+                                    <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                                        <FaImages className="text-purple-500" /> Galeria ({selectedIcon.imagens.length})
+                                    </h4>
+                                    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                        {selectedIcon.imagens.map((img, index) => (
+                                            <div key={index} className="flex-shrink-0 relative group w-24 h-24 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
+                                                <img 
+                                                    src={`/storage/${img}`} 
+                                                    alt={`Imagem ${index + 1}`} 
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <a 
+                                                    href={`/storage/${img}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white"
+                                                    title="Ver imagem original"
+                                                >
+                                                    <FaExternalLinkAlt size={14} />
+                                                </a>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
 
