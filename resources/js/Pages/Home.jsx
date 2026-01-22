@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
-// ADICIONE FaImages NA IMPORTAÇÃO ABAIXO
-import { FaUserTie, FaUsers, FaCalendarAlt, FaNewspaper, FaScroll, FaTimes, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaEnvelope, FaClock, FaExternalLinkAlt, FaLink, FaImages } from 'react-icons/fa';
+// Ícones importados (incluindo os novos para documentos)
+import { 
+    FaUserTie, FaUsers, FaCalendarAlt, FaNewspaper, FaScroll, FaTimes, 
+    FaMapMarkerAlt, FaPhone, FaWhatsapp, FaEnvelope, FaClock, 
+    FaExternalLinkAlt, FaLink, FaImages, FaFileAlt, FaFileDownload 
+} from 'react-icons/fa';
 import * as FaIcons from 'react-icons/fa'; 
 import PublicLayout from '@/Layouts/PublicLayout';
 import Modal from '@/Components/Modal';
@@ -14,7 +18,7 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
     const staticItems = [
         { label: 'Procuradores', iconComponent: <FaUserTie size={40} />, link: '/procuradores', color: 'bg-blue-600' },
         { label: 'Assessores', iconComponent: <FaUsers size={40} />, link: '/assessores', color: 'bg-green-600' },
-        { label: 'Eventos', iconComponent: <FaCalendarAlt size={40} />, link: '/eventos', color: 'bg-orange-500' },
+        { label: 'Programas, projetos e ações', iconComponent: <FaCalendarAlt size={40} />, link: '/eventos', color: 'bg-orange-500' },
         { label: 'Notícias', iconComponent: <FaNewspaper size={40} />, link: '/noticias', color: 'bg-indigo-600' },
         { label: 'Carta do Procurador', iconComponent: <FaScroll size={40} />, link: '/cartas', color: 'bg-red-700' },
     ];
@@ -56,9 +60,9 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                             O que fazemos
                         </h3>
                         <div className="space-y-4 text-gray-600 dark:text-gray-300 text-sm md:text-base leading-relaxed text-justify">
-                            <p>A Procuradoria Geral do Município da Serra — <strong>PROGER</strong>, tem sua estrutura, funcionalidade e atribuições traçadas na Lei Municipal nº 2.356/2000...</p>
-                            <p>Também promove o exame de ordens e sentenças judiciais e orienta o prefeito...</p>
-                            <p>É ainda seu dever aprovar previamente as minutas dos editais...</p>
+                            <p>A Procuradoria Geral do Município da Serra - <strong>PROGER</strong>, tem sua estrutura, funcionalidade e atribuições traçadas na Lei Municipal nº 2.356/2000...</p>
+                            <p>Também promove o exame de ordens e sentenças judiciais e orienta o prefeito os secretários e as demais autoridades. É sua função propor ação civil pública e zelar pela fiel observância e aplicação das leis, decretos, portarias e regulamentos existentes.</p>
+                            <p>É ainda seu dever aprovar previamente as minutas dos editaisde licitação, contratos, acordos, convênios, ajustes e quaisquer outros instrumentos em que haja um acordo de vontades para formação de vínculo obrigacional, oneroso ou não, qualquer que seja a denominação dada aos mesmos, celebrados por quaisquer órgãos ou entidades municipais.</p>
                         </div>
                     </div>
                 </div>
@@ -143,44 +147,14 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                         {/* Corpo do Modal */}
                         <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
                             
-                            {/* Conteúdo Principal */}
+                            {/* 1. Conteúdo Principal (Texto) */}
                             {selectedIcon.conteudo && (
                                 <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
                                     {selectedIcon.conteudo}
                                 </div>
                             )}
 
-                            {/* --------------------- NOVA SEÇÃO: GALERIA DE IMAGENS --------------------- */}
-                            {selectedIcon.imagens && selectedIcon.imagens.length > 0 && (
-                                <div className="mt-6 border-t dark:border-gray-700 pt-4">
-                                    <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
-                                        <FaImages className="text-purple-500" /> Galeria
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                        {selectedIcon.imagens.map((img, index) => (
-                                            <div key={index} className="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm aspect-video">
-                                                <img 
-                                                    src={`/storage/${img}`} 
-                                                    alt={`Galeria ${index}`} 
-                                                    className="w-full h-full object-cover hover:scale-110 transition duration-500"
-                                                />
-                                                <a 
-                                                    href={`/storage/${img}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white"
-                                                    title="Ampliar Imagem"
-                                                >
-                                                    <FaExternalLinkAlt size={20} />
-                                                </a>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                            {/* -------------------------------------------------------------------------- */}
-
-                            {/* Links Externos */}
+                            {/* 2. Links Externos */}
                             {selectedIcon.link_externo && Array.isArray(selectedIcon.link_externo) && selectedIcon.link_externo.length > 0 && (
                                 <div className="mt-4">
                                     <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
@@ -199,7 +173,7 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                                 </div>
                             )}
 
-                            {/* Informações Extras (Grid) */}
+                            {/* 3. Informações Extras Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
                                 {(selectedIcon.horario || selectedIcon.dias) && (
                                     <div className="col-span-1 md:col-span-2 flex items-start gap-3">
@@ -242,6 +216,67 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                                     </div>
                                 )}
                             </div>
+                            
+                            {/* --------------------- 4. DOCUMENTOS ANEXADOS (NOVO) --------------------- */}
+                            {selectedIcon.documentos && selectedIcon.documentos.length > 0 && (
+                                <div className="mt-6 border-t dark:border-gray-700 pt-4">
+                                    <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                                        <FaFileAlt className="text-orange-500" /> Documentos Anexados
+                                    </h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {selectedIcon.documentos.map((doc, index) => {
+                                            // Lógica para suportar formato antigo (string) e novo (objeto)
+                                            const url = typeof doc === 'string' ? doc : doc.url;
+                                            const name = typeof doc === 'string' ? doc.split('/').pop() : doc.nome;
+                                            
+                                            return (
+                                                <a 
+                                                    key={index}
+                                                    href={`/storage/${url}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-orange-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition group"
+                                                >
+                                                    <FaFileDownload className="text-gray-400 group-hover:text-orange-500 flex-shrink-0" />
+                                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate group-hover:text-orange-700 dark:group-hover:text-orange-300">
+                                                        {name}
+                                                    </span>
+                                                </a>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --------------------- 5. GALERIA DE IMAGENS --------------------- */}
+                            {selectedIcon.imagens && selectedIcon.imagens.length > 0 && (
+                                <div className="mt-6 border-t dark:border-gray-700 pt-4">
+                                    <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                                        <FaImages className="text-purple-500" /> Galeria
+                                    </h4>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                        {selectedIcon.imagens.map((img, index) => (
+                                            <div key={index} className="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm aspect-video">
+                                                <img 
+                                                    src={`/storage/${img}`} 
+                                                    alt={`Galeria ${index}`} 
+                                                    className="w-full h-full object-cover hover:scale-110 transition duration-500"
+                                                />
+                                                <a 
+                                                    href={`/storage/${img}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white"
+                                                    title="Ampliar Imagem"
+                                                >
+                                                    <FaExternalLinkAlt size={20} />
+                                                </a>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {/* -------------------------------------------------------------------------- */}
 
                         </div>
                     </div>

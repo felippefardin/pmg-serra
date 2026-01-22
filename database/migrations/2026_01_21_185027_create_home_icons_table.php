@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('home_icons', function (Blueprint $table) {
             $table->id();
-            $table->string('label');       
-            $table->string('icone');       
-            $table->string('cor');         
+            $table->string('label')->nullable();       
+            $table->string('icone')->nullable();       
+            $table->string('cor')->nullable();         
             
-            $table->string('titulo');      
-            $table->text('conteudo');      
+            $table->string('titulo')->nullable();      
+            $table->text('conteudo')->nullable();      
             
             // Funcionamento
             $table->string('horario')->nullable(); 
@@ -23,12 +23,14 @@ return new class extends Migration
             
             // Contatos
             $table->string('telefone')->nullable();
-            $table->string('whatsapp')->nullable(); // Novo
+            $table->string('whatsapp')->nullable(); 
             $table->string('email')->nullable();
             $table->string('endereco')->nullable();
             
-            // Link Extra
-            $table->string('link_externo')->nullable(); // Novo
+            // Links e Arquivos (JSON)
+            $table->json('link_externo')->nullable();
+            $table->json('imagens')->nullable();
+            $table->json('documentos')->nullable(); // Campo novo
 
             $table->boolean('ativo')->default(true);
             $table->timestamps();

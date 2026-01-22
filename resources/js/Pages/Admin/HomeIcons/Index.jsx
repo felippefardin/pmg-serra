@@ -3,8 +3,11 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import * as FaIcons from 'react-icons/fa';
-// Importando ícones específicos usados dentro do detalhe do Modal, incluindo FaImages
-import { FaTimes, FaLink, FaClock, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaEnvelope, FaExternalLinkAlt, FaImages } from 'react-icons/fa';
+// Importando ícones específicos usados dentro do detalhe do Modal
+import { 
+    FaTimes, FaLink, FaClock, FaMapMarkerAlt, FaPhone, FaWhatsapp, 
+    FaEnvelope, FaExternalLinkAlt, FaImages, FaFileAlt, FaFileDownload 
+} from 'react-icons/fa';
 
 export default function Index({ auth, icons }) {
     
@@ -72,10 +75,18 @@ export default function Index({ auth, icons }) {
                                             </td>
                                             <td className="p-3 font-bold">
                                                 {icon.label}
-                                                {/* Indicador visual de imagens na tabela */}
+                                                
+                                                {/* Indicador visual de imagens */}
                                                 {icon.imagens && icon.imagens.length > 0 && (
                                                     <span className="ml-2 inline-flex items-center gap-1 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 text-xs px-2 py-0.5 rounded-full" title={`${icon.imagens.length} imagens`}>
                                                         <FaImages size={10} /> {icon.imagens.length}
+                                                    </span>
+                                                )}
+
+                                                {/* Indicador visual de documentos (NOVO) */}
+                                                {icon.documentos && icon.documentos.length > 0 && (
+                                                    <span className="ml-2 inline-flex items-center gap-1 bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300 text-xs px-2 py-0.5 rounded-full" title={`${icon.documentos.length} documentos`}>
+                                                        <FaFileAlt size={10} /> {icon.documentos.length}
                                                     </span>
                                                 )}
                                             </td>
@@ -155,7 +166,7 @@ export default function Index({ auth, icons }) {
                                 </div>
                             )}
 
-                            {/* Galeria de Imagens (NOVO) */}
+                            {/* Galeria de Imagens */}
                             {selectedIcon.imagens && selectedIcon.imagens.length > 0 && (
                                 <div className="mt-4">
                                     <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
@@ -180,6 +191,34 @@ export default function Index({ auth, icons }) {
                                                 </a>
                                             </div>
                                         ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Documentos Anexados (NOVA SEÇÃO) */}
+                            {selectedIcon.documentos && selectedIcon.documentos.length > 0 && (
+                                <div className="mt-4">
+                                    <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                                        <FaFileAlt className="text-orange-500" /> Documentos ({selectedIcon.documentos.length})
+                                    </h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {selectedIcon.documentos.map((doc, index) => {
+                                            const fileName = doc.split('/').pop();
+                                            return (
+                                                <a 
+                                                    key={index}
+                                                    href={`/storage/${doc}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-orange-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition group"
+                                                >
+                                                    <FaFileDownload className="text-gray-400 group-hover:text-orange-500 flex-shrink-0" />
+                                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate group-hover:text-orange-700 dark:group-hover:text-orange-300">
+                                                        {fileName}
+                                                    </span>
+                                                </a>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}

@@ -9,14 +9,14 @@ return new class extends Migration
     public function up()
     {
         Schema::table('home_icons', function (Blueprint $table) {
-            $table->json('imagens')->nullable()->after('conteudo');
+            $table->json('documentos')->nullable()->after('imagens');
         });
     }
 
     public function down()
     {
         Schema::table('home_icons', function (Blueprint $table) {
-            $table->dropColumn('imagens');
+            $table->dropColumn('documentos');
         });
     }
 };
