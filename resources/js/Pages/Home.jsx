@@ -40,23 +40,35 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
     return (
         <PublicLayout title="PGM Serra - Início">
             
-            {/* HERO SECTION */}
-            <div className="bg-white dark:bg-gray-800 py-6 shadow-sm transition-colors border-b border-gray-100 dark:border-gray-700 overflow-visible">
-                <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-start gap-12">
-                    <div className="flex-shrink-0 pl-2 md:pl-0 relative z-10">
+            {/* HERO SECTION - REESTRUTURADA */}
+            <div className="bg-white dark:bg-gray-800 py-8 shadow-sm transition-colors border-b border-gray-100 dark:border-gray-700 overflow-visible">
+                <div className="container mx-auto px-4 flex flex-col md:flex-row items-start justify-start gap-12">
+                    {/* Brasão */}
+                    <div className="flex-shrink-0 pl-2 md:pl-0 relative z-10 self-center md:self-start">
                         <img 
                             src="/img/brasao_dois.png" 
                             alt="Brasão do Município da Serra" 
                             className="h-40 md:h-52 drop-shadow-2xl transition-transform scale-125 hover:scale-135 duration-300 object-contain"
                         />
                     </div>
-                    <div className="text-center md:text-left max-w-xl z-0">
-                        <h2 className="text-3xl md:text-5xl font-extrabold text-blue-900 dark:text-white mb-2 leading-tight">
-                            {titulo || 'Procuradoria Geral'}
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-300 text-lg leading-snug font-medium">
-                            {descricao || 'Município da Serra - ES'}
-                        </p>
+
+                    {/* Conteúdo "O Que Fazemos" (Substituindo o título antigo) */}
+                    <div className="text-left z-0 flex-1">
+                        <h3 className="text-2xl md:text-3xl font-extrabold text-blue-900 dark:text-white mb-4 border-b-4 border-blue-600 inline-block pb-2">
+                            O que fazemos
+                        </h3>
+                        
+                        <div className="space-y-4 text-gray-600 dark:text-gray-300 text-sm md:text-base leading-relaxed text-justify">
+                            <p>
+                                A Procuradoria Geral do Município da Serra — <strong>PROGER</strong>, tem sua estrutura, funcionalidade e atribuições traçadas na Lei Municipal nº 2.356/2000 — Estrutura Organizacional do Poder Executivo e na Lei Municipal nº 5.539/2022 – Lei Orgânica da Procuradoria Geral do Município, tendo como objetivo promover a defesa, em juízo ou fora dele, dos direitos e interesses do Município.
+                            </p>
+                            <p>
+                                Também promove o exame de ordens e sentenças judiciais e orienta o prefeito, os secretários e as demais autoridades. É sua função propor ação civil pública e zelar pela fiel observância e aplicação das leis, decretos, portarias e regulamentos existentes.
+                            </p>
+                            <p>
+                                É ainda seu dever aprovar previamente as minutas dos editais de licitação, contratos, acordos, convênios, ajustes e quaisquer outros instrumentos em que haja um acordo de vontades para formação de vínculo obrigacional, oneroso ou não, qualquer que seja a denominação dada aos mesmos, celebrados por quaisquer órgãos ou entidades municipais.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,22 +159,7 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                 </div>
             )}
 
-            {/* SEÇÃO: O QUE FAZEMOS */}
-            <div className="bg-white dark:bg-gray-800 py-16 border-t border-gray-200 dark:border-gray-700 transition-colors">
-                 <div className="container mx-auto px-6 lg:px-8 max-w-5xl">
-                    <div className="text-center mb-10">
-                        <h3 className="text-3xl font-extrabold text-blue-900 dark:text-white inline-block border-b-4 border-blue-600 pb-2">
-                            O que fazemos
-                        </h3>
-                    </div>
-                    
-                    <div className="space-y-6 text-lg text-gray-700 dark:text-gray-300 leading-relaxed text-justify">
-                        <p>
-                            A Procuradoria Geral do Município da Serra — <strong>PROGER</strong>, tem sua estrutura, funcionalidade e atribuições traçadas na Lei Municipal nº 2.356/2000 — Estrutura Organizacional do Poder Executivo e na Lei Municipal nº 5.539/2022 – Lei Orgânica da Procuradoria Geral do Município, tendo como objetivo promover a defesa, em juízo ou fora dele, dos direitos e interesses do Município.
-                        </p>Também promove o exame de ordens e sentenças judiciais e orienta o prefeito, os secretários e as demais autoridades. É sua função propor ação civil pública e zelar pela fiel observância e aplicação das leis, decretos, portarias e regulamentos existentes.
-                    </div>É ainda seu dever aprovar previamente as minutas dos editais de licitação, contratos, acordos, convênios, ajustes e quaisquer outros instrumentos em que haja um acordo de vontades para formação de vínculo obrigacional, oneroso ou não, qualquer que seja a denominação dada aos mesmos, celebrados por quaisquer órgãos ou entidades municipais.
-                </div>
-            </div>
+            {/* A SEÇÃO "O QUE FAZEMOS" FOI REMOVIDA DAQUI E MOVIDA PARA O TOPO */}
 
             {/* MODAL DE INFORMAÇÕES */}
             <Modal show={!!selectedIcon} onClose={closeModal} maxWidth="2xl">

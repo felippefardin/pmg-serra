@@ -5,17 +5,18 @@ import ThemeToggle from '@/Components/ThemeToggle';
 import { FaPhoneAlt, FaEnvelope, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
 // 1. IMPORTAÇÃO DO COMPONENTE FLASH
 import FlashMessage from '@/Components/FlashMessage';
-
+// 2. IMPORTAÇÃO DO VLIBRAS (Adicionado)
+import VLibras from '@/Components/VLibras';
 
 
 export default function PublicLayout({ children, title }) {
-    // 2. RECUPERAR A PROP 'flash' DO INERTIA
+    // 3. RECUPERAR A PROP 'flash' DO INERTIA
     const { auth, flash } = usePage().props;
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
             
-            {/* 3. EXIBIR A MENSAGEM SE ELA EXISTIR */}
+            {/* 4. EXIBIR A MENSAGEM SE ELA EXISTIR */}
             {flash && <FlashMessage message={flash.message} />}
 
             {/* CABEÇALHO */}
@@ -109,6 +110,9 @@ export default function PublicLayout({ children, title }) {
                     </div>
                 </div>
             </footer>
+
+            {/* 5. COMPONENTE VLIBRAS INSERIDO AQUI */}
+            <VLibras />
         </div>
     );
 }

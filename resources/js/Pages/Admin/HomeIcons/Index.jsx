@@ -1,23 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
+import Modal from '@/Components/Modal';
 import * as FaIcons from 'react-icons/fa';
+// Importando ícones específicos usados dentro do detalhe do Modal
+import { FaTimes, FaLink, FaClock, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaEnvelope, FaExternalLinkAlt } from 'react-icons/fa';
 
 export default function Index({ auth, icons }) {
     
-    // Função para renderizar o ícone visualmente
-    const renderIcon = (iconName) => {
+    // Estado para controlar o modal
+    const [selectedIcon, setSelectedIcon] = useState(null);
+
+    // Função para renderizar o ícone visualmente (com tamanho ajustável)
+    const renderIcon = (iconName, size = 24) => {
         if (iconName && FaIcons[iconName]) {
             const IconComp = FaIcons[iconName];
-            return <IconComp size={24} />;
+            return <IconComp size={size} />;
         }
-        return <FaIcons.FaQuestionCircle size={24} />;
+        return <FaIcons.FaQuestionCircle size={size} />;
     };
 
     const handleDelete = (id) => {
         if (confirm('Tem certeza que deseja excluir este ícone?')) {
             router.delete(route('admin.home-icons.destroy', id));
         }
+    };
+
+    const closeModal = () => {
+        setSelectedIcon(null);
     };
 
     return (
@@ -57,21 +67,20 @@ export default function Index({ auth, icons }) {
                                     {icons.map((icon) => (
                                         <tr key={icon.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                                             <td className="p-3 text-blue-600">
-                                                {renderIcon(icon.icone)}
+                                                {/* Renderiza pequeno na tabela */}
+                                                {renderIcon(icon.icone, 24)}
                                             </td>
                                             <td className="p-3 font-bold">{icon.label}</td>
                                             <td className="p-3 text-sm text-gray-600 dark:text-gray-400">{icon.titulo}</td>
                                             <td className="p-3 text-right space-x-2">
                                                 
-                                                {/* BOTÃO VISUALIZAR (Abre em nova aba) */}
-                                                <a 
-                                                    href={route('icone.show', icon.id)} 
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-block bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded text-sm transition"
+                                                {/* BOTÃO VISUALIZAR (Agora abre o Modal) */}
+                                                <button 
+                                                    onClick={() => setSelectedIcon(icon)}
+                                                    className="inline-block bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded text-sm transition cursor-pointer"
                                                 >
                                                     Visualizar
-                                                </a>
+                                                </button>
 
                                                 <Link 
                                                     href={route('admin.home-icons.edit', icon.id)} 
@@ -103,6 +112,126 @@ export default function Index({ auth, icons }) {
                     </div>
                 </div>
             </div>
+
+            {/* MODAL DE VISUALIZAÇÃO */}
+            <Modal show={!!selectedIcon} onClose={closeModal} maxWidth="2xl">
+                {selectedIcon && (
+                    <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                        {/* Cabeçalho do Modal */}
+                        <div className={`${selectedIcon.cor || 'bg-blue-600'} p-6 flex items-center justify-between rounded-t-lg`}>
+                            <div className="flex items-center gap-4 text-white">
+                                <div className="p-2 bg-white/20 rounded-full">
+                                    {/* Renderiza grande no modal */}
+                                    {renderIcon(selectedIcon.icone, 32)}
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold">{selectedIcon.titulo || selectedIcon.label}</h2>
+                                    <p className="text-white/80 text-sm font-medium">{selectedIcon.label}</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={closeModal} 
+                                className="text-white hover:bg-white/20 p-2 rounded-full transition"
+                            >
+                                <FaTimes size={24} />
+                            </button>
+                        </div>
+
+                        {/* Corpo do Modal */}
+                        <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+                            
+                            {/* Conteúdo Principal */}
+                            {selectedIcon.conteudo && (
+                                <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                                    {selectedIcon.conteudo}
+                                </div>
+                            )}
+
+                            {/* Links Externos */}
+                            {selectedIcon.link_externo && Array.isArray(selectedIcon.link_externo) && selectedIcon.link_externo.length > 0 && (
+                                <div className="mt-4">
+                                    <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                                        <FaLink className="text-blue-500" /> Links Úteis
+                                    </h4>
+                                    <ul className="space-y-2">
+                                        {selectedIcon.link_externo.map((link, index) => (
+                                            <li key={index}>
+                                                <a 
+                                                    href={link.url} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition group"
+                                                >
+                                                    <span className="font-medium text-blue-700 dark:text-blue-300 group-hover:underline">
+                                                        {link.nome}
+                                                    </span>
+                                                    <FaExternalLinkAlt className="text-gray-400 group-hover:text-blue-500" size={12} />
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {/* Informações Extras (Grid) */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                                
+                                {/* Horário e Dias */}
+                                {(selectedIcon.horario || selectedIcon.dias) && (
+                                    <div className="col-span-1 md:col-span-2 flex items-start gap-3">
+                                        <FaClock className="text-blue-500 mt-1 flex-shrink-0" />
+                                        <div>
+                                            <h4 className="font-semibold text-gray-800 dark:text-white text-sm">Funcionamento</h4>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                {selectedIcon.dias && <span>{selectedIcon.dias}</span>}
+                                                {selectedIcon.dias && selectedIcon.horario && <span> • </span>}
+                                                {selectedIcon.horario && <span>{selectedIcon.horario}</span>}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Contatos */}
+                                {selectedIcon.endereco && (
+                                    <div className="flex items-start gap-3 col-span-1 md:col-span-2">
+                                        <FaMapMarkerAlt className="text-red-500 mt-1 flex-shrink-0" />
+                                        <div>
+                                            <h4 className="font-semibold text-gray-800 dark:text-white text-sm">Endereço</h4>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">{selectedIcon.endereco}</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {selectedIcon.telefone && (
+                                    <div className="flex items-center gap-3">
+                                        <FaPhone className="text-green-600 flex-shrink-0" />
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">{selectedIcon.telefone}</span>
+                                    </div>
+                                )}
+
+                                {selectedIcon.whatsapp && (
+                                    <div className="flex items-center gap-3">
+                                        <FaWhatsapp className="text-green-500 flex-shrink-0" />
+                                        <a href={`https://wa.me/${selectedIcon.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">
+                                            {selectedIcon.whatsapp}
+                                        </a>
+                                    </div>
+                                )}
+
+                                {selectedIcon.email && (
+                                    <div className="flex items-center gap-3 md:col-span-2">
+                                        <FaEnvelope className="text-gray-500 flex-shrink-0" />
+                                        <a href={`mailto:${selectedIcon.email}`} className="text-sm text-blue-600 hover:underline">
+                                            {selectedIcon.email}
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </AuthenticatedLayout>
     );
 }
