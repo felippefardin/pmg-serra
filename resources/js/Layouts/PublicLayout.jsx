@@ -3,8 +3,8 @@ import { Link, usePage } from '@inertiajs/react';
 import FontSizeControls from '@/Components/FontSizeControls';
 import ThemeToggle from '@/Components/ThemeToggle';
 import { FaPhoneAlt, FaEnvelope, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
-// 1. IMPORTAÇÃO DO COMPONENTE FLASH
 import FlashMessage from '@/Components/FlashMessage';
+import VLibras from '@/Components/Vlibras';
 
 
 
@@ -108,7 +108,7 @@ export default function PublicLayout({ children, title }) {
                         </p>
                     </div>
                 </div>
-            </footer>
+            </footer>            
         </div>
     );
 }
