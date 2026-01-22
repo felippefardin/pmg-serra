@@ -6,9 +6,14 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\HomeIcon;
 use Illuminate\Support\Facades\Storage;
+// Importações do Intervention Image
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class HomeIconController extends Controller
 {
+    // ... index, showPublic, create ...
+
     public function index()
     {
         return Inertia::render('Admin/HomeIcons/Index', [
@@ -23,7 +28,6 @@ class HomeIconController extends Controller
 
     public function store(Request $request)
     {
-        // Validação permitindo nulos
         $data = $request->validate([
             'label' => 'nullable|string|max:255',
             'icone' => 'nullable|string|max:255',
@@ -36,40 +40,43 @@ class HomeIconController extends Controller
             'whatsapp' => 'nullable|string|max:255',
             'email'    => 'nullable|email|max:255',
             'endereco' => 'nullable|string|max:255',
-            
-            // Links
             'link_externo' => 'nullable|array',
-            
-            // Imagens
             'imagens' => 'nullable|array',
             'imagens.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
-
-            // Documentos (Estrutura com Nome e Arquivo)
             'documentos' => 'nullable|array',
-            // O arquivo vem dentro do objeto documentos[index][arquivo]
             'documentos.*.nome' => 'nullable|string|max:255',
             'documentos.*.arquivo' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,7z|max:20480',
         ]);
 
-        // 1. Upload de Imagens (Simples)
+        // 1. Processamento de Imagens (Padronização 800x600)
         $imagePaths = [];
         if ($request->hasFile('imagens')) {
+            $manager = new ImageManager(new Driver()); // Inicializa o driver de imagem
+
             foreach ($request->file('imagens') as $image) {
-                $imagePaths[] = $image->store('home_icons', 'public');
+                // Cria um nome único
+                $filename = 'home_icons/' . uniqid() . '.jpg';
+                
+                // Lê a imagem, redimensiona (cover) para 800x600 e converte para JPG com 80% qualidade
+                $img = $manager->read($image);
+                $img->cover(800, 600); 
+                $encoded = $img->toJpeg(80);
+
+                // Salva no Storage
+                Storage::disk('public')->put($filename, (string) $encoded);
+                
+                $imagePaths[] = $filename;
             }
         }
         $data['imagens'] = $imagePaths;
 
-        // 2. Upload de Documentos (Com Nome Personalizado)
+        // 2. Upload de Documentos (Mantém original)
         $docsToStore = [];
         if (!empty($request->documentos)) {
             foreach ($request->documentos as $index => $docItem) {
-                // Verifica se foi enviado um arquivo nesta posição
                 if ($request->hasFile("documentos.{$index}.arquivo")) {
                     $file = $request->file("documentos.{$index}.arquivo");
                     $path = $file->store('home_icons_docs', 'public');
-                    
-                    // Usa o nome fornecido ou o nome original do arquivo
                     $nome = !empty($docItem['nome']) ? $docItem['nome'] : $file->getClientOriginalName();
 
                     $docsToStore[] = [
@@ -111,22 +118,19 @@ class HomeIconController extends Controller
             'email'    => 'nullable|email|max:255',
             'endereco' => 'nullable|string|max:255',             
             'link_externo' => 'nullable|array',
-            
-            // Imagens
             'imagens' => 'nullable|array', 
             'imagens.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'imagens_removidas' => 'nullable|array',
-
-            // Documentos
             'documentos' => 'nullable|array',
             'documentos.*.nome' => 'nullable|string|max:255',
             'documentos.*.arquivo' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,7z|max:20480',
-            'documentos_removidos' => 'nullable|array', // URLs para remover
+            'documentos_removidos' => 'nullable|array',
         ]);
 
         // --- Gerenciar Imagens ---
         $currentImagens = $icon->imagens ?? [];
-        // Remover
+        
+        // Remover antigas
         if (!empty($data['imagens_removidas'])) {
             foreach ($data['imagens_removidas'] as $imageToRemove) {
                 if (Storage::disk('public')->exists($imageToRemove)) {
@@ -135,24 +139,31 @@ class HomeIconController extends Controller
                 $currentImagens = array_values(array_diff($currentImagens, [$imageToRemove]));
             }
         }
-        // Adicionar
+
+        // Adicionar novas (Padronizadas)
         if ($request->hasFile('imagens')) {
+            $manager = new ImageManager(new Driver());
+
             foreach ($request->file('imagens') as $image) {
-                $currentImagens[] = $image->store('home_icons', 'public');
+                $filename = 'home_icons/' . uniqid() . '.jpg';
+                
+                $img = $manager->read($image);
+                $img->cover(800, 600); // Força o tamanho padrão
+                $encoded = $img->toJpeg(80);
+
+                Storage::disk('public')->put($filename, (string) $encoded);
+                
+                $currentImagens[] = $filename;
             }
         }
         $data['imagens'] = $currentImagens;
 
-
-        // --- Gerenciar Documentos ---
+        // --- Gerenciar Documentos (Igual ao anterior) ---
         $currentDocs = $icon->documentos ?? [];
-        
-        // Normalização (caso existam dados antigos que eram só strings)
         $currentDocs = array_map(function($doc) {
             return is_string($doc) ? ['nome' => basename($doc), 'url' => $doc] : $doc;
         }, $currentDocs);
 
-        // 1. Remover marcados (pela URL)
         if (!empty($data['documentos_removidos'])) {
             $urlsToRemove = $data['documentos_removidos'];
             $currentDocs = array_filter($currentDocs, function($doc) use ($urlsToRemove) {
@@ -167,13 +178,11 @@ class HomeIconController extends Controller
             $currentDocs = array_values($currentDocs); 
         }
 
-        // 2. Adicionar novos
         if (!empty($request->documentos)) {
             foreach ($request->documentos as $index => $docItem) {
                 if ($request->hasFile("documentos.{$index}.arquivo")) {
                     $file = $request->file("documentos.{$index}.arquivo");
                     $path = $file->store('home_icons_docs', 'public');
-                    
                     $nome = !empty($docItem['nome']) ? $docItem['nome'] : $file->getClientOriginalName();
 
                     $currentDocs[] = [
@@ -185,7 +194,6 @@ class HomeIconController extends Controller
         }
         $data['documentos'] = $currentDocs;
 
-        // Limpeza de campos auxiliares
         unset($data['imagens_removidas']); 
         unset($data['documentos_removidos']);
 
@@ -194,21 +202,19 @@ class HomeIconController extends Controller
         return redirect()->route('home')->with('message', 'Ícone atualizado com sucesso!');
     }
 
+    // ... destroy ...
     public function destroy($id)
     {
         $icon = HomeIcon::findOrFail($id);
         
-        // Deleta imagens
         if ($icon->imagens) {
             foreach ($icon->imagens as $image) {
                 if (Storage::disk('public')->exists($image)) Storage::disk('public')->delete($image);
             }
         }
 
-        // Deleta documentos
         if ($icon->documentos) {
             foreach ($icon->documentos as $doc) {
-                // Suporte híbrido (string ou array)
                 $url = is_array($doc) ? ($doc['url'] ?? null) : $doc;
                 if ($url && Storage::disk('public')->exists($url)) {
                     Storage::disk('public')->delete($url);

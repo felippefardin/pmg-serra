@@ -248,34 +248,34 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                                 </div>
                             )}
 
-                            {/* --------------------- 5. GALERIA DE IMAGENS --------------------- */}
-                            {selectedIcon.imagens && selectedIcon.imagens.length > 0 && (
-                                <div className="mt-6 border-t dark:border-gray-700 pt-4">
-                                    <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
-                                        <FaImages className="text-purple-500" /> Galeria
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                        {selectedIcon.imagens.map((img, index) => (
-                                            <div key={index} className="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm aspect-video">
-                                                <img 
-                                                    src={`/storage/${img}`} 
-                                                    alt={`Galeria ${index}`} 
-                                                    className="w-full h-full object-cover hover:scale-110 transition duration-500"
-                                                />
-                                                <a 
-                                                    href={`/storage/${img}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white"
-                                                    title="Ampliar Imagem"
-                                                >
-                                                    <FaExternalLinkAlt size={20} />
-                                                </a>
-                                            </div>
-                                        ))}
+                            {/* 5. GALERIA DE IMAGENS */}
+                                {selectedIcon.imagens && selectedIcon.imagens.length > 0 && (
+                                    <div className="mt-6 border-t dark:border-gray-700 pt-4">
+                                        <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                                            <FaImages className="text-purple-500" /> Galeria
+                                        </h4>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                            {selectedIcon.imagens.map((img, index) => (
+                                                <div key={index} className="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm aspect-[4/3]"> {/* Força aspecto 4:3 para combinar com o backend */}
+                                                    <img 
+                                                        src={`/storage/${img}`} 
+                                                        alt={`Galeria ${index}`} 
+                                                        className="w-full h-full object-cover hover:scale-110 transition duration-500" // object-cover é essencial
+                                                    />
+                                                    <a 
+                                                        href={`/storage/${img}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white"
+                                                        title="Ampliar Imagem"
+                                                    >
+                                                        <FaExternalLinkAlt size={20} />
+                                                    </a>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
                             {/* -------------------------------------------------------------------------- */}
 
                         </div>
