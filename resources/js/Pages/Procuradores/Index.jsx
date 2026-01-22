@@ -51,9 +51,19 @@ export default function Procuradores({ lista }) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                         {listaFiltrada.map((pessoa) => (
                             <div key={pessoa.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 flex flex-col group">
-                                <div className="h-64 bg-gray-200 dark:bg-gray-700 overflow-hidden relative">
+                                
+                                {/* AJUSTE DE IMAGEM: 
+                                    - h-72 define a altura fixa padrão do container.
+                                    - object-cover faz a imagem preencher o espaço (crop se for maior, zoom se for menor).
+                                    - object-top foca no rosto (parte superior) ao cortar.
+                                */}
+                                <div className="h-72 w-full bg-gray-200 dark:bg-gray-700 overflow-hidden relative">
                                     {pessoa.foto_path ? (
-                                        <img src={`/storage/${pessoa.foto_path}`} alt={pessoa.nome} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                        <img 
+                                            src={`/storage/${pessoa.foto_path}`} 
+                                            alt={pessoa.nome} 
+                                            className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110" 
+                                        />
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">
                                             <FaIdCard size={48} />
@@ -61,6 +71,7 @@ export default function Procuradores({ lista }) {
                                         </div>
                                     )}
                                 </div>
+
                                 <div className="p-6 text-center flex-grow flex flex-col">
                                     <h3 className="text-lg font-bold text-gray-800 dark:text-white group-hover:text-blue-900 dark:group-hover:text-blue-400 transition-colors">{pessoa.nome}</h3>
                                     <span className="inline-block mx-auto bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs px-3 py-1 rounded-full font-bold mt-2 uppercase tracking-wider">{pessoa.cargo}</span>

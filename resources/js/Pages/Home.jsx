@@ -248,7 +248,7 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                                 </div>
                             )}
 
-                            {/* 5. GALERIA DE IMAGENS */}
+                           {/* 5. GALERIA DE IMAGENS */}
                                 {selectedIcon.imagens && selectedIcon.imagens.length > 0 && (
                                     <div className="mt-6 border-t dark:border-gray-700 pt-4">
                                         <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
