@@ -10,30 +10,27 @@ use App\Models\Evento;
 use App\Models\Noticia;
 use App\Models\Carta;
 use App\Models\HomeIcon;
-use App\Models\Avaliacao; // Adicionado para facilitar
+use App\Models\Avaliacao;
 
 class SiteController extends Controller
 {
     // Home
     public function home()
     {
-        // 1. Busca os ícones ativos
         $icons = HomeIcon::where('ativo', true)->get();
 
-        // 2. Busca as avaliações aprovadas
         $avaliacoes = Avaliacao::where('aprovado', true)
             ->orderBy('created_at', 'desc')
-            ->take(10) // Limite de 10 para não pesar
+            ->take(10)
             ->get();
 
-        // 3. Retorna TUDO junto para a View 'Home'
         return Inertia::render('Home', [
             'dynamicIcons' => $icons,
             'avaliacoes' => $avaliacoes
         ]);
     }
 
-    // Listagens (Index)
+    // Listagens
     public function procuradores() {
         return Inertia::render('Procuradores/Index', ['lista' => Procurador::all()]);
     }
@@ -43,7 +40,6 @@ class SiteController extends Controller
     }
 
     public function eventos() {
-        // Carrega eventos ordenados pela data (mais recente primeiro)
         return Inertia::render('Eventos/Index', [
             'lista' => Evento::orderBy('data_evento', 'desc')->get()
         ]);
@@ -61,9 +57,8 @@ class SiteController extends Controller
         ]);
     }
 
-    // Visualização Individual (Show)
+    // Visualização Individual
     public function showEvento($id) {
-        // Carrega a galeria junto com o evento
         return Inertia::render('Eventos/Show', [
             'evento' => Evento::with('fotos')->findOrFail($id)
         ]);
@@ -78,6 +73,40 @@ class SiteController extends Controller
     public function showCarta($id) {        
         return Inertia::render('Carta/Show', [
             'carta' => Carta::with('fotos')->findOrFail($id)
+        ]);
+    }
+
+    // Busca Global
+    public function search(Request $request)
+    {
+        $termo = $request->input('q');
+
+        if (!$termo) {
+            return redirect()->route('home');
+        }
+
+        $noticias = Noticia::where('titulo', 'like', "%{$termo}%")
+            ->orWhere('conteudo', 'like', "%{$termo}%")
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $eventos = Evento::where('titulo', 'like', "%{$termo}%")
+            ->orWhere('descricao', 'like', "%{$termo}%")
+            ->orderBy('data_evento', 'desc')
+            ->get();
+
+        $cartas = Carta::where('titulo', 'like', "%{$termo}%")
+            ->orWhere('conteudo', 'like', "%{$termo}%")
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return Inertia::render('Busca/Index', [
+            'termo' => $termo,
+            'resultados' => [
+                'noticias' => $noticias,
+                'eventos' => $eventos,
+                'cartas' => $cartas
+            ]
         ]);
     }
 }

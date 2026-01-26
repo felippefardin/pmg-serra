@@ -1,16 +1,27 @@
 import React from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, useForm } from '@inertiajs/react'; // Ajustado para importar tudo junto
 import FontSizeControls from '@/Components/FontSizeControls';
 import ThemeToggle from '@/Components/ThemeToggle';
-import { FaPhoneAlt, FaEnvelope, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaPhoneAlt, FaEnvelope, FaClock, FaMapMarkerAlt, FaSearch } from 'react-icons/fa'; // Adicionado FaSearch
 import FlashMessage from '@/Components/FlashMessage';
 import VLibras from '@/Components/Vlibras';
-
-
 
 export default function PublicLayout({ children, title }) {
     // 2. RECUPERAR A PROP 'flash' DO INERTIA
     const { auth, flash } = usePage().props;
+
+    // --- LÓGICA DE BUSCA (NOVO) ---
+    const { data, setData, get } = useForm({
+        q: ''
+    });
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (data.q.trim()) {
+            get(route('site.search'));
+        }
+    };
+    // ------------------------------
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
@@ -42,8 +53,10 @@ export default function PublicLayout({ children, title }) {
                         </Link>
                     </div>
 
-                    {/* LADO DIREITO: Controles e Navegação */}
+                    {/* LADO DIREITO: Controles, Busca e Navegação */}
                     <div className="flex flex-col md:flex-row items-center gap-6">
+                        
+                        {/* Controles de Fonte e Tema */}
                         <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-900 rounded-lg p-1 border border-gray-200 dark:border-gray-800">
                              <FontSizeControls 
                                 className="bg-transparent border-r border-gray-300 dark:border-gray-700 text-black dark:text-white pr-2 mr-2"
@@ -51,6 +64,22 @@ export default function PublicLayout({ children, title }) {
                              />
                              <ThemeToggle className="bg-transparent text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800 rounded p-1" />
                         </div>
+
+                        {/* --- BARRA DE BUSCA (NOVO) --- */}
+                        <form onSubmit={handleSearch} className="hidden md:flex items-center relative">
+                            <input 
+                                type="text" 
+                                name="q"
+                                value={data.q}
+                                onChange={(e) => setData('q', e.target.value)}
+                                placeholder="Buscar..." 
+                                className="w-48 pl-4 pr-10 py-1.5 text-sm rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                            />
+                            <button type="submit" className="absolute right-0 top-0 mt-2 mr-3 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                <FaSearch size={14} />
+                            </button>
+                        </form>
+                        {/* ----------------------------- */}
 
                         <nav className="flex items-center gap-6">
                             {auth.user ? (

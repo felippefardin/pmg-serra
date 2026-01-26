@@ -23,6 +23,7 @@ Route::get('/assessores', [SiteController::class, 'assessores'])->name('assessor
 Route::get('/eventos', [SiteController::class, 'eventos'])->name('eventos');
 Route::get('/noticias', [SiteController::class, 'noticias'])->name('noticias');
 Route::get('/cartas', [SiteController::class, 'cartas'])->name('cartas');
+Route::get('/busca', [SiteController::class, 'search'])->name('site.search');
 
 // Visualização Individual
 Route::get('/evento/{id}', [SiteController::class, 'showEvento'])->name('evento.show');
@@ -31,6 +32,7 @@ Route::get('/carta/{id}', [SiteController::class, 'showCarta'])->name('carta.sho
 
 // Visualização do Ícone Dinâmico
 Route::get('/informacao/{id}', [HomeIconController::class, 'showPublic'])->name('icone.show');
+
 
 // Enviar Avaliação (Público)
 Route::post('/avaliar', [AvaliacaoController::class, 'store'])->name('avaliacao.store');
