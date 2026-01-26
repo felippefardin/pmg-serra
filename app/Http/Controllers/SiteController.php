@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail; 
+use App\Mail\FaleConoscoMail;
 use Inertia\Inertia;
 use App\Models\Procurador;
 use App\Models\Assessor;
@@ -74,6 +76,44 @@ class SiteController extends Controller
         return Inertia::render('Carta/Show', [
             'carta' => Carta::with('fotos')->findOrFail($id)
         ]);
+    }
+
+    public function contato() {
+        return Inertia::render('Contato/Index');
+    }
+
+    // Processa o envio
+    public function enviarContato(Request $request) {
+        // 1. Validação
+        $validado = $request->validate([
+            'nome' => 'required|string|max:255',
+            'email' => 'required|email',
+            'celular' => 'nullable|string|max:20',
+            'telefone_fixo' => 'nullable|string|max:20',
+            'assunto' => 'required|string|max:100',
+            'mensagem' => 'required|string',
+        ]);
+
+        // 2. Roteamento de E-mails
+        $emailsPorSetor = [
+            'Dívida Ativa (DECODAM)' => 'decodam.proger@serra.es.gov.br',
+            'Cartório (CRCDD)'       => 'cartorio.progerserra.es@gmail.com',
+            'Contábil (NTC)'         => 'nucleotecnicocontabil@gmail.com',
+            'Gabinete'               => 'proger@serra.es.gov.br',
+        ];
+
+        $destinatario = $emailsPorSetor[$validado['assunto']] ?? 'proger@serra.es.gov.br';
+
+      
+        try {
+            Mail::to($destinatario)->send(new FaleConoscoMail($validado));            
+            
+            return redirect()->back()->with('success', 'Sua mensagem foi enviada com sucesso! Aguarde o retorno.');
+        
+        } catch (\Exception $e) {
+      
+            return redirect()->back()->with('error', 'Sua mensagem não pôde ser enviada. Detalhe do erro: ' . $e->getMessage());
+        }
     }
 
     // Busca Global

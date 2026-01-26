@@ -24,6 +24,8 @@ Route::get('/eventos', [SiteController::class, 'eventos'])->name('eventos');
 Route::get('/noticias', [SiteController::class, 'noticias'])->name('noticias');
 Route::get('/cartas', [SiteController::class, 'cartas'])->name('cartas');
 Route::get('/busca', [SiteController::class, 'search'])->name('site.search');
+Route::get('/fale-conosco', [SiteController::class, 'contato'])->name('contato.index');
+Route::post('/fale-conosco', [SiteController::class, 'enviarContato'])->name('contato.send');
 
 // Visualização Individual
 Route::get('/evento/{id}', [SiteController::class, 'showEvento'])->name('evento.show');

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link, usePage, useForm } from '@inertiajs/react'; // Ajustado para importar tudo junto
+import { Link, usePage, useForm } from '@inertiajs/react';
 import FontSizeControls from '@/Components/FontSizeControls';
 import ThemeToggle from '@/Components/ThemeToggle';
-import { FaPhoneAlt, FaEnvelope, FaClock, FaMapMarkerAlt, FaSearch } from 'react-icons/fa'; // Adicionado FaSearch
+import { FaPhoneAlt, FaEnvelope, FaClock, FaMapMarkerAlt, FaSearch } from 'react-icons/fa';
 import FlashMessage from '@/Components/FlashMessage';
 import VLibras from '@/Components/Vlibras';
 
@@ -10,7 +10,7 @@ export default function PublicLayout({ children, title }) {
     // 2. RECUPERAR A PROP 'flash' DO INERTIA
     const { auth, flash } = usePage().props;
 
-    // --- LÓGICA DE BUSCA (NOVO) ---
+    // --- LÓGICA DE BUSCA ---
     const { data, setData, get } = useForm({
         q: ''
     });
@@ -21,13 +21,21 @@ export default function PublicLayout({ children, title }) {
             get(route('site.search'));
         }
     };
-    // ------------------------------
+    // ----------------------
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
             
-            {/* 3. EXIBIR A MENSAGEM SE ELA EXISTIR */}
-            {flash && <FlashMessage message={flash.message} />}
+            {/* 3. LÓGICA DE EXIBIÇÃO DE MENSAGENS (AJUSTADO) */}
+            {/* Prioridade 1: Erro (Vermelho) */}
+            {flash.error && <FlashMessage message={flash.error} type="error" />}
+            
+            {/* Prioridade 2: Sucesso (Verde) */}
+            {flash.success && <FlashMessage message={flash.success} type="success" />}
+            
+            {/* Prioridade 3: Mensagem Genérica (Legado) */}
+            {flash.message && !flash.success && !flash.error && <FlashMessage message={flash.message} type="success" />}
+            {/* ----------------------------------------------- */}
 
             {/* CABEÇALHO */}
             <header className="bg-gray-50 dark:bg-gray-950 text-black dark:text-white shadow-sm sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
@@ -65,7 +73,7 @@ export default function PublicLayout({ children, title }) {
                              <ThemeToggle className="bg-transparent text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800 rounded p-1" />
                         </div>
 
-                        {/* --- BARRA DE BUSCA (NOVO) --- */}
+                        {/* --- BARRA DE BUSCA --- */}
                         <form onSubmit={handleSearch} className="hidden md:flex items-center relative">
                             <input 
                                 type="text" 
@@ -79,9 +87,19 @@ export default function PublicLayout({ children, title }) {
                                 <FaSearch size={14} />
                             </button>
                         </form>
-                        {/* ----------------------------- */}
+                        {/* ---------------------- */}
 
                         <nav className="flex items-center gap-6">
+                            
+                            {/* --- LINK FALE CONOSCO --- */}
+                            <Link 
+                                href={route('contato.index')} 
+                                className="text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400 transition"
+                            >
+                                Fale Conosco
+                            </Link>
+                            {/* ------------------------- */}
+
                             {auth.user ? (
                                 <Link href="/dashboard" className="px-5 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-full text-sm font-bold transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                     Painel
@@ -92,6 +110,7 @@ export default function PublicLayout({ children, title }) {
                                 </Link>
                             )}
                         </nav>
+                        
                     </div>
                 </div>
             </header>

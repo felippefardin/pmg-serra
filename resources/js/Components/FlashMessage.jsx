@@ -1,42 +1,62 @@
 import React, { useState, useEffect } from 'react';
+import { FaCheckCircle, FaExclamationCircle, FaTimes } from 'react-icons/fa';
 
-export default function FlashMessage({ message }) {
+export default function FlashMessage({ message, type = 'success' }) {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         if (message) {
             setVisible(true);
-            // Define o tempo de 4 segundos (4000ms) para sumir
+            // Tempo: 5 segundos para sucesso, 10 segundos para erro (para dar tempo de ler)
+            const time = type === 'error' ? 10000 : 5000;
+            
             const timer = setTimeout(() => {
                 setVisible(false);
-            }, 4000);
+            }, time);
             return () => clearTimeout(timer);
         }
-    }, [message]);
+    }, [message, type]);
 
     if (!visible || !message) return null;
 
+    // Definição de Estilos (Verde vs Vermelho)
+    const styles = {
+        success: {
+            bg: 'bg-green-600',
+            text: 'text-white',
+            title: 'Sucesso!',
+            icon: <FaCheckCircle className="w-6 h-6 text-white" />
+        },
+        error: {
+            bg: 'bg-red-600',
+            text: 'text-white',
+            title: 'Erro!',
+            icon: <FaExclamationCircle className="w-6 h-6 text-white" />
+        }
+    };
+
+    const currentStyle = styles[type] || styles.success;
+
     return (
-        <div className="fixed top-5 right-5 z-50 animate-bounce-in">
-            <div className="bg-green-600 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-4 min-w-[300px]">
-                {/* Ícone de Sucesso */}
-                <div className="bg-white rounded-full p-1">
-                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
+        <div className="fixed top-24 right-5 z-50 animate-bounce-in">
+            <div className={`${currentStyle.bg} ${currentStyle.text} px-6 py-4 rounded-lg shadow-2xl flex items-start gap-4 min-w-[300px] max-w-md`}>
+                
+                {/* Ícone Dinâmico */}
+                <div className="bg-white/20 rounded-full p-1 mt-1 shrink-0">
+                    {currentStyle.icon}
                 </div>
 
                 <div className="flex-1">
-                    <p className="font-bold">Sucesso!</p>
-                    <p className="text-sm">{message}</p>
+                    <p className="font-bold text-lg leading-tight">{currentStyle.title}</p>
+                    <p className="text-sm mt-1 opacity-95 break-words">{message}</p>
                 </div>
 
-                {/* Botão X para fechar */}
+                {/* Botão Fechar */}
                 <button 
                     onClick={() => setVisible(false)} 
-                    className="text-green-200 hover:text-white transition-colors font-bold text-xl"
+                    className="text-white/70 hover:text-white transition-colors font-bold text-xl leading-none"
                 >
-                    &times;
+                    <FaTimes />
                 </button>
             </div>
         </div>

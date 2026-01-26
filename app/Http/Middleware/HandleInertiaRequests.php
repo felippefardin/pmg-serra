@@ -34,11 +34,13 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            // ADICIONE ESTE BLOCO 'flash'
+            // --- BLOCO FLASH AJUSTADO PARA SUCESSO E ERRO ---
             'flash' => [
+                'message' => fn () => $request->session()->get('message'),
                 'success' => fn () => $request->session()->get('success'),
                 'error'   => fn () => $request->session()->get('error'),
             ],
+            
         ];
     }
 }
