@@ -4,10 +4,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\HomeIconController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Admin\UserController; // <--- ADICIONADO: Importação necessária
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\AvaliacaoController; // Importação correta
 
 // ==========================================
 // ÁREA PÚBLICA (Qualquer pessoa vê)
@@ -16,20 +17,24 @@ use Inertia\Inertia;
 // Página Inicial
 Route::get('/', [SiteController::class, 'home'])->name('home');
 
-// Listagens (Grid de itens)
+// Listagens
 Route::get('/procuradores', [SiteController::class, 'procuradores'])->name('procuradores');
 Route::get('/assessores', [SiteController::class, 'assessores'])->name('assessores');
 Route::get('/eventos', [SiteController::class, 'eventos'])->name('eventos');
 Route::get('/noticias', [SiteController::class, 'noticias'])->name('noticias');
 Route::get('/cartas', [SiteController::class, 'cartas'])->name('cartas');
 
-// Visualização Individual (Clicar e abrir)
+// Visualização Individual
 Route::get('/evento/{id}', [SiteController::class, 'showEvento'])->name('evento.show');
 Route::get('/noticia/{id}', [SiteController::class, 'showNoticia'])->name('noticia.show');
 Route::get('/carta/{id}', [SiteController::class, 'showCarta'])->name('carta.show');
 
-// Visualização do Ícone Dinâmico (Texto/Informação/Contatos)
+// Visualização do Ícone Dinâmico
 Route::get('/informacao/{id}', [HomeIconController::class, 'showPublic'])->name('icone.show');
+
+// Enviar Avaliação (Público)
+Route::post('/avaliar', [AvaliacaoController::class, 'store'])->name('avaliacao.store');
+
 
 // ==========================================
 // ÁREA ADMINISTRATIVA (Requer Login)
@@ -40,8 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Painel Principal
     Route::get('/dashboard', function () { return Inertia::render('Dashboard'); })->name('dashboard');
 
-    // === GERENCIAR USUÁRIOS (CRIAR LOGIN) ===
-    // Estas são as rotas que estavam gerando o erro 500
+    // === GERENCIAR USUÁRIOS ===
     Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
 
@@ -79,6 +83,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/assessores/{id}/editar', [AdminController::class, 'editAssessor'])->name('admin.assessores.edit');
     Route::post('/admin/assessores/{id}', [AdminController::class, 'updateAssessor'])->name('admin.assessores.update');
     Route::delete('/admin/assessores/{id}', [AdminController::class, 'destroyAssessor'])->name('admin.assessores.destroy');
+
+    // === GERENCIAR AVALIAÇÕES (MODERAÇÃO) ===
+    Route::get('/admin/avaliacoes', [AvaliacaoController::class, 'indexAdmin'])->name('admin.avaliacoes.index');
+    Route::patch('/admin/avaliacoes/{id}/status', [AvaliacaoController::class, 'updateStatus'])->name('admin.avaliacoes.status');
+    Route::delete('/admin/avaliacoes/{id}', [AvaliacaoController::class, 'destroy'])->name('admin.avaliacoes.destroy');
 
     // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

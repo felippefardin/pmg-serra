@@ -33,6 +33,11 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink href={route('admin.users.create')} active={route().current('admin.users.create')}>
                                     <span className="text-black dark:text-white font-bold">Cadastrar Usuário</span>
                                 </NavLink>
+
+                                {/* Link para Moderar Avaliações (Desktop) */}
+                                <NavLink href={route('admin.avaliacoes.index')} active={route().current('admin.avaliacoes.index')}>
+                                    <span className="text-black dark:text-white font-bold">Moderar Avaliações</span>
+                                </NavLink>
                             </div>
                         </div>
 
@@ -93,6 +98,11 @@ export default function Authenticated({ user, header, children }) {
                         {/* Link para Cadastrar Usuário (Mobile) */}
                         <ResponsiveNavLink href={route('admin.users.create')} active={route().current('admin.users.create')}>
                             <span className="text-black dark:text-white font-bold">Cadastrar Usuário</span>
+                        </ResponsiveNavLink>
+
+                        {/* Link para Moderar Avaliações (Mobile) */}
+                        <ResponsiveNavLink href={route('admin.avaliacoes.index')} active={route().current('admin.avaliacoes.index')}>
+                            <span className="text-black dark:text-white font-bold">Moderar Avaliações</span>
                         </ResponsiveNavLink>
 
                         <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">

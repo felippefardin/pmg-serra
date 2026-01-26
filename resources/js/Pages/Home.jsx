@@ -1,18 +1,33 @@
 import React, { useState } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
-// Ícones importados (incluindo os novos para documentos)
+// Ícones importados (incluindo os novos para documentos e avaliações)
 import { 
     FaUserTie, FaUsers, FaCalendarAlt, FaNewspaper, FaScroll, FaTimes, 
     FaMapMarkerAlt, FaPhone, FaWhatsapp, FaEnvelope, FaClock, 
-    FaExternalLinkAlt, FaLink, FaImages, FaFileAlt, FaFileDownload 
+    FaExternalLinkAlt, FaLink, FaImages, FaFileAlt, FaFileDownload,
+    FaStar, FaRegStar, FaUserSecret, FaCheckCircle 
 } from 'react-icons/fa';
 import * as FaIcons from 'react-icons/fa'; 
 import PublicLayout from '@/Layouts/PublicLayout';
 import Modal from '@/Components/Modal';
+import PrimaryButton from '@/Components/PrimaryButton';
+import SecondaryButton from '@/Components/SecondaryButton';
+import Checkbox from '@/Components/Checkbox';
+import InputLabel from '@/Components/InputLabel';
+import TextInput from '@/Components/TextInput';
 
-export default function Home({ titulo, descricao, dynamicIcons }) {
+export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
     const { auth } = usePage().props;
     const [selectedIcon, setSelectedIcon] = useState(null);
+
+    // Estados para Avaliação
+    const [rating, setRating] = useState(0);
+    const [hoverRating, setHoverRating] = useState(0);
+    const [comment, setComment] = useState('');
+    const [name, setName] = useState('');
+    const [isAnonymous, setIsAnonymous] = useState(false);
+    const [showLgpdModal, setShowLgpdModal] = useState(false);
+    const [processing, setProcessing] = useState(false);
 
     // 1. ÍCONES FIXOS (Originais)
     const staticItems = [
@@ -40,6 +55,48 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
 
     const closeModal = () => {
         setSelectedIcon(null);
+    };
+
+    // LÓGICA DE AVALIAÇÃO
+    const handleStarClick = (starIndex) => {
+        setRating(starIndex);
+    };
+
+    const handlePreSubmit = (e) => {
+        e.preventDefault();
+        if (rating === 0) {
+            alert('Por favor, selecione uma nota de 1 a 5 estrelas.');
+            return;
+        }
+        if (comment.trim() === '') {
+            alert('Por favor, escreva um comentário.');
+            return;
+        }
+        // Abre o modal LGPD
+        setShowLgpdModal(true);
+    };
+
+    const confirmSubmit = () => {
+        setProcessing(true);
+        router.post(route('avaliacao.store'), {
+            estrelas: rating,
+            comentario: comment,
+            nome: isAnonymous ? 'Anônimo' : name,
+            anonimo: isAnonymous
+        }, {
+            onSuccess: () => {
+                setProcessing(false);
+                setShowLgpdModal(false);
+                setRating(0);
+                setComment('');
+                setName('');
+                setIsAnonymous(false);
+            },
+            onError: () => {
+                setProcessing(false);
+                setShowLgpdModal(false);
+            }
+        });
     };
 
     return (
@@ -125,6 +182,164 @@ export default function Home({ titulo, descricao, dynamicIcons }) {
                     </div>
                 </div>
             )}
+
+            {/* SEÇÃO 3: AVALIAÇÕES E FEEDBACK */}
+            <div className="py-12 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+                <div className="container mx-auto px-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        
+                        {/* Formulário de Avaliação */}
+                        <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
+                                <FaStar className="text-yellow-400" /> Avalie nosso Portal
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
+                                Sua opinião é fundamental para melhorarmos nossos serviços.
+                            </p>
+
+                            <form onSubmit={handlePreSubmit} className="space-y-4">
+                                <div>
+                                    <InputLabel value="Sua nota:" className="mb-2" />
+                                    <div className="flex gap-1">
+                                        {[1, 2, 3, 4, 5].map((index) => (
+                                            <button
+                                                key={index}
+                                                type="button"
+                                                onClick={() => handleStarClick(index)}
+                                                onMouseEnter={() => setHoverRating(index)}
+                                                onMouseLeave={() => setHoverRating(0)}
+                                                className="text-3xl transition-transform hover:scale-110 focus:outline-none"
+                                            >
+                                                {index <= (hoverRating || rating) ? (
+                                                    <FaStar className="text-yellow-400" />
+                                                ) : (
+                                                    <FaRegStar className="text-gray-300 dark:text-gray-600" />
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-4">
+                                    <div className="flex-1">
+                                        <InputLabel htmlFor="name" value="Seu Nome (Opcional)" />
+                                        <TextInput
+                                            id="name"
+                                            type="text"
+                                            className="mt-1 block w-full"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            disabled={isAnonymous}
+                                            placeholder={isAnonymous ? "Modo Anônimo Ativado" : "Digite seu nome"}
+                                        />
+                                    </div>
+                                    <div className="mt-6">
+                                        <label className="flex items-center">
+                                            <Checkbox
+                                                name="anonymous"
+                                                checked={isAnonymous}
+                                                onChange={(e) => setIsAnonymous(e.target.checked)}
+                                            />
+                                            <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Enviar Anonimamente</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <InputLabel htmlFor="comment" value="Seu Comentário" />
+                                    <textarea
+                                        id="comment"
+                                        className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm h-32"
+                                        value={comment}
+                                        onChange={(e) => setComment(e.target.value)}
+                                        placeholder="Conte-nos sua experiência..."
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <PrimaryButton disabled={processing} className="w-full justify-center py-3">
+                                    Enviar Avaliação
+                                </PrimaryButton>
+                            </form>
+                        </div>
+
+                        {/* Lista de Avaliações Aprovadas */}
+                        <div>
+                            <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-6 border-l-4 border-yellow-400 pl-3">
+                                Últimas Avaliações
+                            </h3>
+                            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                                {avaliacoes && avaliacoes.length > 0 ? (
+                                    avaliacoes.map((av) => (
+                                        <div key={av.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    {av.anonimo ? (
+                                                        <div className="bg-gray-200 p-2 rounded-full"><FaUserSecret /></div>
+                                                    ) : (
+                                                        <div className="bg-blue-100 text-blue-600 p-2 rounded-full font-bold text-xs">
+                                                            {av.nome ? av.nome.substring(0,2).toUpperCase() : 'US'}
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <p className="font-bold text-gray-800 dark:text-white text-sm">
+                                                            {av.anonimo ? 'Anônimo' : av.nome}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500">
+                                                            {new Date(av.created_at).toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex text-yellow-400 text-sm">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        i < av.estrelas ? <FaStar key={i} /> : <FaRegStar key={i} />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <p className="text-gray-600 dark:text-gray-300 text-sm italic">
+                                                "{av.comentario}"
+                                            </p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-10 text-gray-500">
+                                        <FaStar className="mx-auto text-4xl mb-3 opacity-20" />
+                                        <p>Seja o primeiro a avaliar!</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* MODAL LGPD */}
+            <Modal show={showLgpdModal} onClose={() => setShowLgpdModal(false)}>
+                <div className="p-6">
+                    <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <FaCheckCircle className="text-green-600" /> Consentimento de Dados (LGPD)
+                    </h2>
+                    <p className="mt-4 text-sm text-gray-600 dark:text-gray-400 text-justify">
+                        Em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018), informamos que:
+                        <br/><br/>
+                        1. Ao enviar esta avaliação, você concorda que seu comentário e nota (estrelas) poderão ser publicados publicamente neste portal após moderação.
+                        <br/>
+                        2. Se optou pelo envio identificado, seu nome aparecerá junto ao comentário. Se optou por "Anônimo", seus dados pessoais não serão expostos publicamente.
+                        <br/>
+                        3. A PGM Serra reserva-se o direito de não publicar conteúdos ofensivos, desrespeitosos ou que violem a legislação vigente.
+                        <br/><br/>
+                        Deseja confirmar o envio?
+                    </p>
+                    <div className="mt-6 flex justify-end gap-3">
+                        <SecondaryButton onClick={() => setShowLgpdModal(false)}>
+                            Cancelar
+                        </SecondaryButton>
+                        <PrimaryButton onClick={confirmSubmit} disabled={processing}>
+                            Concordo e Enviar
+                        </PrimaryButton>
+                    </div>
+                </div>
+            </Modal>
 
             {/* MODAL DE INFORMAÇÕES */}
             <Modal show={!!selectedIcon} onClose={closeModal} maxWidth="2xl">

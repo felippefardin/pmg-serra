@@ -10,17 +10,28 @@ use App\Models\Evento;
 use App\Models\Noticia;
 use App\Models\Carta;
 use App\Models\HomeIcon;
+use App\Models\Avaliacao; // Adicionado para facilitar
 
 class SiteController extends Controller
 {
     // Home
-   public function home()
-{
-    $icons = HomeIcon::where('ativo', true)->get();
-    return Inertia::render('Home', [
-        'dynamicIcons' => $icons
-    ]);
-}
+    public function home()
+    {
+        // 1. Busca os ícones ativos
+        $icons = HomeIcon::where('ativo', true)->get();
+
+        // 2. Busca as avaliações aprovadas
+        $avaliacoes = Avaliacao::where('aprovado', true)
+            ->orderBy('created_at', 'desc')
+            ->take(10) // Limite de 10 para não pesar
+            ->get();
+
+        // 3. Retorna TUDO junto para a View 'Home'
+        return Inertia::render('Home', [
+            'dynamicIcons' => $icons,
+            'avaliacoes' => $avaliacoes
+        ]);
+    }
 
     // Listagens (Index)
     public function procuradores() {
@@ -52,7 +63,7 @@ class SiteController extends Controller
 
     // Visualização Individual (Show)
     public function showEvento($id) {
-        // ATUALIZADO: Adicionado with('fotos') para carregar a galeria junto com o evento
+        // Carrega a galeria junto com o evento
         return Inertia::render('Eventos/Show', [
             'evento' => Evento::with('fotos')->findOrFail($id)
         ]);
@@ -69,5 +80,4 @@ class SiteController extends Controller
             'carta' => Carta::with('fotos')->findOrFail($id)
         ]);
     }
-    
 }
