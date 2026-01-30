@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 
 export default defineConfig({
     plugins: [
@@ -11,10 +10,9 @@ export default defineConfig({
         }),
         react(),
     ],
-    resolve: {
-        alias: {
-            // CORREÇÃO: Removemos o __dirname e usamos o caminho relativo direto
-            '@': path.resolve('resources/js'),
+    server: {
+        watch: {       
+            ignored: ['**/vendor/**'], 
         },
     },
 });
