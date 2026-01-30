@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
-// Ícones importados
 import { 
     FaUserTie, FaUsers, FaCalendarAlt, FaNewspaper, FaScroll, FaTimes, 
     FaMapMarkerAlt, FaPhone, FaWhatsapp, FaEnvelope, FaClock, 
     FaExternalLinkAlt, FaLink, FaImages, FaFileAlt, FaFileDownload,
-    FaStar, FaRegStar, FaUserSecret, FaCheckCircle 
+    FaStar, FaRegStar, FaUserSecret, FaCheckCircle, FaQuestionCircle, FaChevronDown 
 } from 'react-icons/fa';
 import * as FaIcons from 'react-icons/fa'; 
 import PublicLayout from '@/Layouts/PublicLayout';
@@ -18,12 +17,8 @@ import TextInput from '@/Components/TextInput';
 
 export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
     const { auth } = usePage().props;
-    const [selectedIcon, setSelectedIcon] = useState(null);const [openFaq, setOpenFaq] = useState(null);
-const faqs = [
-    { q: "Como parcelar minha Dívida Ativa?", a: "O parcelamento pode ser solicitado via portal do cidadão ou presencialmente no guichê da PGM na sede da Prefeitura." },
-    { q: "Onde encontro o modelo de Carta do Procurador?", a: "Os modelos oficiais estão disponíveis no ícone 'Carta do Procurador' na seção de Acesso Rápido." },
-    { q: "Como tirar segunda via do IPTU?", a:"Solicitanto no setor de cartório da procuradoria fiscal."}
-];
+    const [selectedIcon, setSelectedIcon] = useState(null);
+    const [openFaq, setOpenFaq] = useState(null);
 
     // Estados para Avaliação
     const [rating, setRating] = useState(0);
@@ -34,7 +29,12 @@ const faqs = [
     const [showLgpdModal, setShowLgpdModal] = useState(false);
     const [processing, setProcessing] = useState(false);
 
-    // 1. ÍCONES FIXOS (Originais)
+    const faqs = [
+        { q: "Como parcelar débitos de IPTU/Dívida Ativa?", a: "O parcelamento pode ser feito de forma online pelo Portal do Cidadão da Serra ou presencialmente no guichê da PGM na sede da prefeitura." },
+        { q: "Como solicitar uma certidão negativa?", a: "As certidões podem ser emitidas através do site oficial da Prefeitura na aba 'Serviços' ou via processo administrativo." },
+        { q: "Qual o horário de atendimento presencial?", a: "O atendimento ao público ocorre de segunda a sexta-feira, das 08h às 18h na sede administrativa." }
+    ];
+
     const staticItems = [
         { label: 'Procuradores', iconComponent: <FaUserTie size={40} />, link: '/procuradores', color: 'bg-blue-600' },
         { label: 'Assessores', iconComponent: <FaUsers size={40} />, link: '/assessores', color: 'bg-green-600' },
@@ -58,23 +58,13 @@ const faqs = [
         return <FaIcons.FaQuestionCircle size={size} />;
     };
 
-    const closeModal = () => {
-        setSelectedIcon(null);
-    };
-
-    // LÓGICA DE AVALIAÇÃO
-    const handleStarClick = (starIndex) => {
-        setRating(starIndex);
-    };
+    const closeModal = () => setSelectedIcon(null);
+    const handleStarClick = (starIndex) => setRating(starIndex);
 
     const handlePreSubmit = (e) => {
         e.preventDefault();
-        if (rating === 0) {
-            alert('Por favor, selecione uma nota de 1 a 5 estrelas.');
-            return;
-        }
-        if (comment.trim() === '') {
-            alert('Por favor, escreva um comentário.');
+        if (rating === 0 || comment.trim() === '') {
+            alert('Por favor, preencha a nota e o comentário.');
             return;
         }
         setShowLgpdModal(true);
@@ -91,15 +81,9 @@ const faqs = [
             onSuccess: () => {
                 setProcessing(false);
                 setShowLgpdModal(false);
-                setRating(0);
-                setComment('');
-                setName('');
-                setIsAnonymous(false);
+                setRating(0); setComment(''); setName(''); setIsAnonymous(false);
             },
-            onError: () => {
-                setProcessing(false);
-                setShowLgpdModal(false);
-            }
+            onError: () => setProcessing(false)
         });
     };
 
@@ -110,47 +94,30 @@ const faqs = [
             <div className="bg-white dark:bg-gray-800 py-8 shadow-sm transition-colors border-b border-gray-100 dark:border-gray-700 overflow-visible">
                 <div className="container mx-auto px-4 flex flex-col md:flex-row items-start justify-start gap-12">
                     <div className="flex-shrink-0 pl-2 md:pl-0 relative z-10 self-center md:self-start">
-                        <a 
-                            href="https://www.serra.es.gov.br/" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="block cursor-pointer"
-                        >
-                            <img 
-                                src="/img/brasao_dois.png" 
-                                alt="Brasão do Município da Serra" 
-                                className="h-40 md:h-52 drop-shadow-2xl transition-transform scale-125 hover:scale-135 duration-300 object-contain dark:invert dark:brightness-200"
-                            />
+                        <a href="https://www.serra.es.gov.br/" target="_blank" rel="noopener noreferrer" className="block cursor-pointer transition-transform hover:scale-110">
+                            <img src="/img/brasao_dois.png" alt="Brasão" className="h-40 md:h-52 drop-shadow-2xl scale-125 object-contain dark:invert dark:brightness-200" />
                         </a>
                     </div>
                     <div className="text-left z-0 flex-1">
-                        <h3 className="text-2xl md:text-3xl font-extrabold text-blue-900 dark:text-white mb-4 border-b-4 border-blue-600 inline-block pb-2">
-                            O que fazemos
-                        </h3>
+                        <h3 className="text-2xl md:text-3xl font-extrabold text-blue-900 dark:text-white mb-4 border-b-4 border-blue-600 inline-block pb-2">O que fazemos</h3>
                         <div className="space-y-4 text-gray-600 dark:text-gray-300 text-sm md:text-base leading-relaxed text-justify">
-                            <p>A Procuradoria Geral do Município da Serra - <strong>PROGER</strong>, tem sua estrutura, funcionalidade e atribuições traçadas na Lei Municipal nº 2.356/2000...</p>
-                            <p>Também promove o exame de ordens e sentenças judiciais e orienta o prefeito os secretários e as demais autoridades. É sua função propor ação civil pública e zelar pela fiel observância e aplicação das leis, decretos, portarias e regulamentos existentes.</p>
-                            <p>É ainda seu dever aprovar previamente as minutas dos editais de licitação, contratos, acordos, convênios e ajustes.</p>
+                            <p>A Procuradoria Geral do Município da Serra — <strong>PROGER</strong>, tem sua estrutura, funcionalidade e atribuições traçadas na Lei Municipal nº 2.356/2000 — Estrutura Organizacional do Poder Executivo e na Lei Municipal nº 5.539/2022 – Lei Orgânica da Procuradoria Geral do Município, tendo como objetivo promover a defesa, em juízo ou fora dele, dos direitos e interesses do Município. Também promove o exame de ordens e sentenças judiciais e orienta o prefeito, os secretários e as demais autoridades. É sua função propor ação civil pública e zelar pela fiel observância e aplicação das leis, decretos, portarias e regulamentos existentes. É ainda seu dever aprovar previamente as minutas dos editais de licitação, contratos, acordos, convênios, ajustes e quaisquer outros instrumentos em que haja um acordo de vontades para formação de vínculo obrigacional, oneroso ou não, qualquer que seja a denominação dada aos mesmos, celebrados por quaisquer órgãos ou entidades municipais.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* SEÇÃO 1: ÍCONES FIXOS */}
+            {/* SEÇÃO 1: ÍCONES FIXOS (ACESSO RÁPIDO) */}
             <div className="py-12 bg-gray-50 dark:bg-gray-900 transition-colors">
                 <div className="container mx-auto px-4">
-                    <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-6 border-l-4 border-blue-600 pl-3">
-                        Acesso Rápido
-                    </h3>
+                    <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-6 border-l-4 border-blue-600 pl-3 uppercase tracking-wider">Acesso Rápido</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                         {staticItems.map((item, index) => (
                             <Link key={index} href={item.link} className="block bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border border-gray-200 dark:border-gray-700 h-full">
-                                <div className={`${item.color} h-24 flex items-center justify-center text-white transition-colors`}>
-                                    {item.iconComponent}
-                                </div>
+                                <div className={`${item.color} h-24 flex items-center justify-center text-white transition-colors`}>{item.iconComponent}</div>
                                 <div className="p-6 text-center">
-                                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{item.label}</h4>
-                                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium group-hover:underline">Acessar &rarr;</span>
+                                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">{item.label}</h4>
+                                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium group-hover:underline">Acessar →</span>
                                 </div>
                             </Link>
                         ))}
@@ -158,47 +125,25 @@ const faqs = [
                 </div>
             </div>
 
-            {/* SEÇÃO 2: ÍCONES DINÂMICOS - ROLAGEM HORIZONTAL E INTERAÇÃO IGUALADA */}
+            {/* SEÇÃO 2: SERVIÇOS ADICIONAIS - ROLAGEM HORIZONTAL */}
             {dynamicIcons && dynamicIcons.length > 0 && (
                 <div className="py-12 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 transition-colors">
                     <div className="container mx-auto px-4">
-                        <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-6 border-l-4 border-green-600 pl-3">
-                            Informações e Serviços Adicionais
-                        </h3>
-                        
+                        <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-6 border-l-4 border-green-600 pl-3 uppercase tracking-wider">Informações e Serviços Adicionais</h3>
                         <div className="flex overflow-x-auto pb-8 gap-6 custom-scrollbar snap-x touch-pan-x pt-4">
                             {dynamicIcons.map((item, index) => (
-                                <div 
-                                    key={index} 
-                                    className="relative group flex-shrink-0 w-64 md:w-72 snap-start mb-2"
-                                >
-                                    <div 
-                                        onClick={() => setSelectedIcon(item)} 
-                                        className="cursor-pointer block bg-white dark:bg-gray-900 rounded-xl shadow hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border border-gray-200 dark:border-gray-700 h-full"
-                                    >
-                                        <div className={`${item.cor} h-24 flex items-center justify-center text-white transition-colors`}>
-                                            {renderDynamicIcon(item.icone)}
-                                        </div>
+                                <div key={index} className="relative group flex-shrink-0 w-64 md:w-72 snap-start mb-2">
+                                    <div onClick={() => setSelectedIcon(item)} className="cursor-pointer block bg-gray-50 dark:bg-gray-900 rounded-xl shadow hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border border-gray-200 dark:border-gray-700 h-full">
+                                        <div className={`${item.cor} h-24 flex items-center justify-center text-white transition-colors`}>{renderDynamicIcon(item.icone)}</div>
                                         <div className="p-6 text-center">
                                             <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2 truncate px-2">{item.label}</h4>
-                                            <span className="text-sm text-gray-500 dark:text-gray-400 font-medium group-hover:underline">Ver Detalhes &rarr;</span>
+                                            <span className="text-sm text-gray-500 dark:text-gray-400 font-medium group-hover:underline">Ver Detalhes →</span>
                                         </div>
                                     </div>
                                     {auth.user && (
-                                        <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
-                                            <Link 
-                                                href={route('admin.home-icons.edit', item.id)} 
-                                                onClick={(e) => e.stopPropagation()} 
-                                                className="bg-white text-blue-600 p-2 rounded-full shadow-lg hover:bg-blue-50 transition transform hover:scale-110"
-                                            >
-                                                <FaIcons.FaPen size={12} />
-                                            </Link>
-                                            <button 
-                                                onClick={(e) => handleDelete(e, item.id)} 
-                                                className="bg-white text-red-600 p-2 rounded-full shadow-lg hover:bg-red-50 transition transform hover:scale-110"
-                                            >
-                                                <FaIcons.FaTrash size={12} />
-                                            </button>
+                                        <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                                            <Link href={route('admin.home-icons.edit', item.id)} onClick={(e) => e.stopPropagation()} className="bg-white text-blue-600 p-2 rounded-full shadow hover:bg-blue-50 transition transform hover:scale-110"><FaIcons.FaPen size={12} /></Link>
+                                            <button onClick={(e) => handleDelete(e, item.id)} className="bg-white text-red-600 p-2 rounded-full shadow hover:bg-red-50 transition transform hover:scale-110"><FaIcons.FaTrash size={12} /></button>
                                         </div>
                                     )}
                                 </div>
@@ -208,160 +153,117 @@ const faqs = [
                 </div>
             )}
 
-            {/* SEÇÃO 3: AVALIAÇÕES E FEEDBACK */}
-            <div className="py-12 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            {/* SEÇÃO 3: AVALIAÇÕES E FEEDBACK (COM FEEDBACK STICKY) */}
+            <div className="py-16 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
                 <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        {/* Formulário de Avaliação */}
-                        <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
-                                <FaStar className="text-yellow-400" /> Avalie nosso Portal
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
-                                Sua opinião é fundamental para melhorarmos nossos serviços.
-                            </p>
+                    <div className="text-center mb-12">
+                        <h3 className="text-2xl font-extrabold text-gray-800 dark:text-white mb-2">Transparência e Opinião</h3>
+                        <p className="text-gray-500 dark:text-gray-400">Sua avaliação é importante para melhorarmos nosso atendimento ao cidadão.</p>
+                    </div>
 
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                        {/* Formulário (Lado Esquerdo) */}
+                        <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg">
+                            <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                                <FaStar className="text-yellow-400" /> Deixe sua nota
+                            </h4>
                             <form onSubmit={handlePreSubmit} className="space-y-4">
-                                <div>
-                                    <InputLabel value="Sua nota:" className="mb-2" />
-                                    <div className="flex gap-1">
-                                        {[1, 2, 3, 4, 5].map((index) => (
-                                            <button
-                                                key={index}
-                                                type="button"
-                                                onClick={() => handleStarClick(index)}
-                                                onMouseEnter={() => setHoverRating(index)}
-                                                onMouseLeave={() => setHoverRating(0)}
-                                                className="text-3xl transition-transform hover:scale-110 focus:outline-none"
-                                            >
-                                                {index <= (hoverRating || rating) ? (
-                                                    <FaStar className="text-yellow-400" />
-                                                ) : (
-                                                    <FaRegStar className="text-gray-300 dark:text-gray-600" />
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
+                                <div className="flex gap-2 mb-4">
+                                    {[1, 2, 3, 4, 5].map((i) => (
+                                        <button key={i} type="button" onClick={() => handleStarClick(i)} onMouseEnter={() => setHoverRating(i)} onMouseLeave={() => setHoverRating(0)} className="text-4xl focus:outline-none transition-transform hover:scale-110">
+                                            {i <= (hoverRating || rating) ? <FaStar className="text-yellow-400" /> : <FaRegStar className="text-gray-300 dark:text-gray-600" />}
+                                        </button>
+                                    ))}
                                 </div>
-
-                                <div className="flex items-center gap-4">
+                                <div className="flex flex-col md:flex-row gap-4">
                                     <div className="flex-1">
-                                        <InputLabel htmlFor="name" value="Seu Nome (Opcional)" />
-                                        <TextInput
-                                            id="name"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                            disabled={isAnonymous}
-                                            placeholder={isAnonymous ? "Modo Anônimo Ativado" : "Digite seu nome"}
-                                        />
+                                        <InputLabel value="Nome (Opcional)" />
+                                        <TextInput className="w-full" value={name} onChange={(e) => setName(e.target.value)} disabled={isAnonymous} placeholder={isAnonymous ? "Modo Anônimo" : "Ex: João Silva"} />
                                     </div>
-                                    <div className="mt-6">
-                                        <label className="flex items-center">
-                                            <Checkbox
-                                                name="anonymous"
-                                                checked={isAnonymous}
-                                                onChange={(e) => setIsAnonymous(e.target.checked)}
-                                            />
-                                            <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Enviar Anonimamente</span>
+                                    <div className="flex items-end pb-3">
+                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                            <Checkbox checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)} />
+                                            <span className="text-sm text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors text-xs">Anônimo</span>
                                         </label>
                                     </div>
                                 </div>
-
-                                <div>
-                                    <InputLabel htmlFor="comment" value="Seu Comentário" />
-                                    <textarea
-                                        id="comment"
-                                        className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm h-32"
-                                        value={comment}
-                                        onChange={(e) => setComment(e.target.value)}
-                                        placeholder="Conte-nos sua experiência..."
-                                        required
-                                    ></textarea>
-                                </div>
-
-                                <PrimaryButton disabled={processing} className="w-full justify-center py-3">
-                                    Enviar Avaliação
-                                </PrimaryButton>
+                                <textarea className="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 rounded-xl h-32 focus:ring-blue-500" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Como foi sua experiência no portal?" required></textarea>
+                                <PrimaryButton disabled={processing} className="w-full justify-center py-4 shadow-blue-500/20 shadow-lg text-lg">Enviar Avaliação</PrimaryButton>
                             </form>
                         </div>
 
-                        {/* Lista de Avaliações Aprovadas */}
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-6 border-l-4 border-yellow-400 pl-3">
-                                Últimas Avaliações
-                            </h3>
-                            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                                {avaliacoes && avaliacoes.length > 0 ? (
-                                    avaliacoes.map((av) => (
-                                        <div key={av.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <div className="flex items-center gap-2">
-                                                    {av.anonimo ? (
-                                                        <div className="bg-gray-200 p-2 rounded-full"><FaUserSecret /></div>
-                                                    ) : (
-                                                        <div className="bg-blue-100 text-blue-600 p-2 rounded-full font-bold text-xs">
-                                                            {av.nome ? av.nome.substring(0,2).toUpperCase() : 'US'}
-                                                        </div>
-                                                    )}
-                                                    <div>
-                                                        <p className="font-bold text-gray-800 dark:text-white text-sm">
-                                                            {av.anonimo ? 'Anônimo' : av.nome}
-                                                        </p>
-                                                        <p className="text-xs text-gray-500">
-                                                            {new Date(av.created_at).toLocaleDateString()}
-                                                        </p>
-                                                    </div>
+                        {/* Lista de Feedback (Lado Direito - FIXO AO ROLAR) */}
+                        <div className="lg:sticky lg:top-24 self-start">
+                            <h4 className="text-lg font-bold text-gray-800 dark:text-white border-l-4 border-yellow-400 pl-3 mb-4">Relatos Recentes</h4>
+                            <div className="space-y-4 max-h-[550px] overflow-y-auto pr-4 custom-scrollbar">
+                                {avaliacoes?.length > 0 ? avaliacoes.map((av) => (
+                                    <div key={av.id} className="bg-white dark:bg-gray-900 p-5 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm transition-hover hover:shadow-md">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 p-2.5 rounded-full">
+                                                    {av.anonimo ? <FaUserSecret size={18} /> : <FaUserTie size={18} />}
                                                 </div>
-                                                <div className="flex text-yellow-400 text-sm">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        i < av.estrelas ? <FaStar key={i} /> : <FaRegStar key={i} />
-                                                    ))}
+                                                <div>
+                                                    <p className="font-bold text-sm text-gray-800 dark:text-white">{av.anonimo ? 'Anônimo' : av.nome}</p>
+                                                    <p className="text-[10px] text-gray-400 uppercase tracking-tighter">{new Date(av.created_at).toLocaleDateString()}</p>
                                                 </div>
                                             </div>
-                                            <p className="text-gray-600 dark:text-gray-300 text-sm italic text-justify">
-                                                "{av.comentario}"
-                                            </p>
+                                            <div className="flex text-yellow-400 text-xs">
+                                                {[...Array(5)].map((_, i) => (i < av.estrelas ? <FaStar key={i} /> : <FaRegStar key={i} />))}
+                                            </div>
                                         </div>
-                                    ))
-                                ) : (
-                                    <div className="text-center py-10 text-gray-500">
-                                        <FaStar className="mx-auto text-4xl mb-3 opacity-20" />
-                                        <p>Seja o primeiro a avaliar!</p>
+                                        <p className="text-gray-600 dark:text-gray-400 text-sm italic leading-relaxed">"{av.comentario}"</p>
+                                    </div>
+                                )) : (
+                                    <div className="text-center py-20 text-gray-400 bg-white dark:bg-gray-800 rounded-2xl border-2 border-dashed dark:border-gray-700">
+                                        <FaStar className="mx-auto text-5xl mb-4 opacity-10" />
+                                        <p>Nenhuma avaliação recebida ainda.</p>
                                     </div>
                                 )}
-                                <div className="py-12 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-                                    <div className="container mx-auto px-4 max-w-4xl">
-                                        <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-6 border-l-4 border-blue-600 pl-3">Dúvidas Frequentes (FAQ)</h3>
-                                        <div className="space-y-3">
-                                            {faqs.map((faq, idx) => (
-                                                <div key={idx} className="border border-gray-200 dark:border-gray-700 rounded-lg">
-                                                    <button onClick={() => setOpenFaq(openFaq === idx ? null : idx)} className="w-full text-left p-4 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                                        <span className="font-semibold text-gray-800 dark:text-gray-200">{faq.q}</span>
-                                                        <span className="text-blue-600 font-bold">{openFaq === idx ? '−' : '+'}</span>
-                                                    </button>
-                                                    {openFaq === idx && <div className="p-4 text-gray-600 dark:text-gray-400 border-t dark:border-gray-700">{faq.a}</div>}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* MODAL LGPD */}
+            {/* SEÇÃO 4: FAQ (ÚLTIMA SEÇÃO) */}
+            <div className="py-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-800">
+                <div className="container mx-auto px-4 max-w-4xl">
+                    <div className="text-center mb-10">
+                        <h3 className="text-2xl font-extrabold text-gray-800 dark:text-white mb-2 flex justify-center items-center gap-3">
+                            <FaQuestionCircle className="text-blue-600" /> Perguntas Frequentes
+                        </h3>
+                        <p className="text-gray-500 dark:text-gray-400">Encontre respostas rápidas para as principais dúvidas sobre os serviços da PGM.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                        {faqs.map((faq, idx) => (
+                            <div key={idx} className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
+                                <button 
+                                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)} 
+                                    className="w-full text-left p-5 flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                >
+                                    <span className="font-bold text-gray-700 dark:text-gray-200">{faq.q}</span>
+                                    <span className={`text-blue-600 transition-transform duration-300 ${openFaq === idx ? 'rotate-180' : ''}`}>
+                                        <FaChevronDown />
+                                    </span>
+                                </button>
+                                {openFaq === idx && (
+                                    <div className="p-5 text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-950/40 border-t border-gray-100 dark:border-gray-700 leading-relaxed italic text-justify">
+                                        {faq.a}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* MODAIS */}
             <Modal show={showLgpdModal} onClose={() => setShowLgpdModal(false)}>
                 <div className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                        <FaCheckCircle className="text-green-600" /> Consentimento de Dados (LGPD)
-                    </h2>
-                    <p className="mt-4 text-sm text-gray-600 dark:text-gray-400 text-justify">
-                        Em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018), informamos que ao enviar esta avaliação, você concorda que seu comentário e nota poderão ser publicados publicamente neste portal após moderação.
-                    </p>
+                    <h2 className="text-lg font-bold dark:text-gray-100 flex items-center gap-2"><FaCheckCircle className="text-green-600" /> Consentimento LGPD</h2>
+                    <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">Ao clicar em confirmar, você autoriza a PGM Serra a exibir sua nota e comentário publicamente para fins de transparência administrativa.</p>
                     <div className="mt-6 flex justify-end gap-3">
                         <SecondaryButton onClick={() => setShowLgpdModal(false)}>Cancelar</SecondaryButton>
                         <PrimaryButton onClick={confirmSubmit} disabled={processing}>Concordo e Enviar</PrimaryButton>
@@ -369,63 +271,54 @@ const faqs = [
                 </div>
             </Modal>
 
-            {/* MODAL DE INFORMAÇÕES */}
             <Modal show={!!selectedIcon} onClose={closeModal} maxWidth="2xl">
                 {selectedIcon && (
                     <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-                        
-                        <div className={`${selectedIcon.cor} p-6 flex items-center justify-between rounded-t-lg text-white`}>
+                        <div className={`${selectedIcon.cor} p-6 flex items-center justify-between rounded-t-lg text-white shadow-lg`}>
                             <div className="flex items-center gap-4">
-                                <div className="p-2 bg-white/20 rounded-full">
-                                    {renderDynamicIcon(selectedIcon.icone, 32)}
-                                </div>
+                                <div className="p-2 bg-white/20 rounded-full">{renderDynamicIcon(selectedIcon.icone, 32)}</div>
                                 <div>
                                     <h2 className="text-2xl font-bold">{selectedIcon.titulo || selectedIcon.label}</h2>
-                                    <p className="text-white/80 text-sm font-medium">{selectedIcon.label}</p>
+                                    <p className="text-white/80 text-xs font-medium uppercase tracking-widest">{selectedIcon.label}</p>
                                 </div>
                             </div>
                             <button onClick={closeModal} className="hover:bg-white/20 p-2 rounded-full transition"><FaTimes size={24} /></button>
                         </div>
-
                         <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
-                            {selectedIcon.conteudo && (
-                                <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line text-justify">
-                                    {selectedIcon.conteudo}
-                                </div>
-                            )}
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-                                {(selectedIcon.horario || selectedIcon.dias) && (
-                                    <div className="col-span-1 md:col-span-2 flex items-start gap-3">
-                                        <FaClock className="text-blue-500 mt-1 flex-shrink-0" />
-                                        <div>
-                                            <h4 className="font-semibold text-sm">Funcionamento</h4>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                {selectedIcon.dias} {selectedIcon.horario && `• ${selectedIcon.horario}`}
-                                            </p>
-                                        </div>
+                            {selectedIcon.conteudo && <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 whitespace-pre-line text-justify">{selectedIcon.conteudo}</div>}
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 bg-gray-50 dark:bg-gray-900/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700">
+                                {selectedIcon.horario && (
+                                    <div className="col-span-2 flex gap-3 items-center">
+                                        <FaClock className="text-blue-500" />
+                                        <p className="text-sm font-medium">{selectedIcon.dias} • {selectedIcon.horario}</p>
                                     </div>
                                 )}
                                 {selectedIcon.endereco && (
-                                    <div className="flex items-start gap-3 col-span-1 md:col-span-2">
-                                        <FaMapMarkerAlt className="text-red-500 mt-1 flex-shrink-0" />
+                                    <a 
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedIcon.endereco + ' Serra ES')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="col-span-2 flex items-start gap-4 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-blue-100 dark:border-blue-900/30 hover:border-blue-500 transition-all group"
+                                    >
+                                        <FaMapMarkerAlt className="text-red-500 mt-1" size={20} />
                                         <div>
-                                            <h4 className="font-semibold text-sm">Endereço</h4>
+                                            <h4 className="font-bold text-xs uppercase text-blue-600 group-hover:underline">Ver localização no Google Maps</h4>
                                             <p className="text-sm text-gray-600 dark:text-gray-400">{selectedIcon.endereco}</p>
                                         </div>
-                                    </div>
+                                    </a>
                                 )}
                             </div>
 
                             {/* Documentos */}
                             {selectedIcon.documentos && selectedIcon.documentos.length > 0 && (
-                                <div className="mt-6 border-t dark:border-gray-700 pt-4">
-                                    <h4 className="font-bold mb-3 flex items-center gap-2"><FaFileAlt className="text-orange-500" /> Documentos</h4>
+                                <div className="mt-6 border-t dark:border-gray-700 pt-6">
+                                    <h4 className="font-bold mb-4 flex items-center gap-2"><FaFileAlt className="text-orange-500" /> Documentos Oficiais</h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         {selectedIcon.documentos.map((doc, idx) => (
-                                            <a key={idx} href={`/storage/${typeof doc === 'string' ? doc : doc.url}`} target="_blank" className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-orange-50 border border-gray-200 dark:border-gray-600 transition group">
+                                            <a key={idx} href={`/storage/${typeof doc === 'string' ? doc : doc.url}`} target="_blank" className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-orange-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition group">
                                                 <FaFileDownload className="text-gray-400 group-hover:text-orange-500" />
-                                                <span className="text-sm truncate">{typeof doc === 'string' ? doc.split('/').pop() : doc.nome}</span>
+                                                <span className="text-sm font-medium truncate">{typeof doc === 'string' ? doc.split('/').pop() : doc.nome}</span>
                                             </a>
                                         ))}
                                     </div>
@@ -434,12 +327,13 @@ const faqs = [
 
                             {/* Galeria */}
                             {selectedIcon.imagens && selectedIcon.imagens.length > 0 && (
-                                <div className="mt-6 border-t dark:border-gray-700 pt-4">
-                                    <h4 className="font-bold mb-3 flex items-center gap-2"><FaImages className="text-purple-500" /> Galeria</h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                <div className="mt-6 border-t dark:border-gray-700 pt-6">
+                                    <h4 className="font-bold mb-4 flex items-center gap-2"><FaImages className="text-purple-500" /> Galeria de Fotos</h4>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                         {selectedIcon.imagens.map((img, idx) => (
-                                            <div key={idx} className="relative rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 aspect-[4/3]">
-                                                <img src={`/storage/${img}`} alt="Galeria" className="w-full h-full object-cover hover:scale-110 transition duration-500" />
+                                            <div key={idx} className="group relative rounded-xl overflow-hidden shadow-sm aspect-[4/3] border border-gray-200 dark:border-gray-700">
+                                                <img src={`/storage/${img}`} alt="Galeria" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                                             </div>
                                         ))}
                                     </div>
@@ -448,7 +342,6 @@ const faqs = [
                         </div>
                     </div>
                 )}
-                
             </Modal>
         </PublicLayout>
     );
