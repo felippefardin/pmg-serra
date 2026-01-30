@@ -18,7 +18,12 @@ import TextInput from '@/Components/TextInput';
 
 export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
     const { auth } = usePage().props;
-    const [selectedIcon, setSelectedIcon] = useState(null);
+    const [selectedIcon, setSelectedIcon] = useState(null);const [openFaq, setOpenFaq] = useState(null);
+const faqs = [
+    { q: "Como parcelar minha Dívida Ativa?", a: "O parcelamento pode ser solicitado via portal do cidadão ou presencialmente no guichê da PGM na sede da Prefeitura." },
+    { q: "Onde encontro o modelo de Carta do Procurador?", a: "Os modelos oficiais estão disponíveis no ícone 'Carta do Procurador' na seção de Acesso Rápido." },
+    { q: "Como tirar segunda via do IPTU?", a:"Solicitanto no setor de cartório da procuradoria fiscal."}
+];
 
     // Estados para Avaliação
     const [rating, setRating] = useState(0);
@@ -326,6 +331,22 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                                         <p>Seja o primeiro a avaliar!</p>
                                     </div>
                                 )}
+                                <div className="py-12 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+                                    <div className="container mx-auto px-4 max-w-4xl">
+                                        <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-6 border-l-4 border-blue-600 pl-3">Dúvidas Frequentes (FAQ)</h3>
+                                        <div className="space-y-3">
+                                            {faqs.map((faq, idx) => (
+                                                <div key={idx} className="border border-gray-200 dark:border-gray-700 rounded-lg">
+                                                    <button onClick={() => setOpenFaq(openFaq === idx ? null : idx)} className="w-full text-left p-4 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                                        <span className="font-semibold text-gray-800 dark:text-gray-200">{faq.q}</span>
+                                                        <span className="text-blue-600 font-bold">{openFaq === idx ? '−' : '+'}</span>
+                                                    </button>
+                                                    {openFaq === idx && <div className="p-4 text-gray-600 dark:text-gray-400 border-t dark:border-gray-700">{faq.a}</div>}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -352,6 +373,7 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
             <Modal show={!!selectedIcon} onClose={closeModal} maxWidth="2xl">
                 {selectedIcon && (
                     <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                        
                         <div className={`${selectedIcon.cor} p-6 flex items-center justify-between rounded-t-lg text-white`}>
                             <div className="flex items-center gap-4">
                                 <div className="p-2 bg-white/20 rounded-full">
@@ -426,6 +448,7 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                         </div>
                     </div>
                 )}
+                
             </Modal>
         </PublicLayout>
     );

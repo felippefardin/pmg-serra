@@ -114,6 +114,7 @@ export default function PublicLayout({ children, title }) {
                     </div>
                 </div>
             </header>
+            
 
             {/* CONTEÚDO PRINCIPAL */}
             <main className="flex-grow">
