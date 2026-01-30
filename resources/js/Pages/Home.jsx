@@ -32,7 +32,13 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
     const faqs = [
         { q: "Como parcelar débitos de IPTU/Dívida Ativa?", a: "O parcelamento pode ser feito de forma online pelo Portal do Cidadão da Serra ou presencialmente no guichê da PGM na sede da prefeitura." },
         { q: "Como solicitar uma certidão negativa?", a: "As certidões podem ser emitidas através do site oficial da Prefeitura na aba 'Serviços' ou via processo administrativo." },
-        { q: "Qual o horário de atendimento presencial?", a: "O atendimento ao público ocorre de segunda a sexta-feira, das 08h às 18h na sede administrativa." }
+        { q: "Qual o horário de atendimento presencial?", a: "O atendimento ao público ocorre de segunda a sexta-feira, das 08h às 18h na sede administrativa." },
+        { q: "O que é Dívida Ativa e como regularizar?", a: "Dívida Ativa são débitos (IPTU, ISS, multas) não pagos no prazo e enviados para cobrança jurídica. Você pode regularizar via Portal do Cidadão ou presencialmente no guichê da PGM na sede da prefeitura."},
+        { q: "Recebi uma citação judicial de cobrança. O que devo fazer?", a: "Você deve procurar o Departamento de Dívida Ativa da PGM imediatamente para verificar o débito e as opções de parcelamento, evitando medidas como penhora de bens ou bloqueios bancários."},
+        { q: "Como solicitar uma Certidão Negativa de Débitos (CND)?", a: "Se não houver pendências, a certidão é emitida na hora pelo site da Prefeitura. Caso existam débitos em Dívida Ativa, a regularização deve ser feita junto à PGM antes da emissão."},
+        { q: "Onde posso consultar os pareceres jurídicos da PGM?", a: "Pareceres referenciais e orientações jurídicas consolidadas para consulta pública estão disponíveis no Portal da Transparência da Serra, garantindo o controle de legalidade."},
+        { q: "Como entrar em contato com o setor de Dívida Ativa por telefone?", a: "Você pode ligar para o telefone geral da PGM no número (27) 3291-2067 e solicitar o ramal do setor de cobrança ou atendimento ao contribuinte."},
+        { q: "Qual o horário de atendimento presencial?", a: "O atendimento ao público na sede administrativa da Procuradoria ocorre de segunda a sexta-feira, das 08h às 18h."}
     ];
 
     const staticItems = [
