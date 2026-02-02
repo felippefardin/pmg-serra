@@ -117,36 +117,46 @@ class SiteController extends Controller
     }
 
     // Busca Global
+    
     public function search(Request $request)
-    {
-        $termo = $request->input('q');
+{
+    $termo = $request->input('q');
 
-        if (!$termo) {
-            return redirect()->route('home');
-        }
-
-        $noticias = Noticia::where('titulo', 'like', "%{$termo}%")
-            ->orWhere('conteudo', 'like', "%{$termo}%")
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $eventos = Evento::where('titulo', 'like', "%{$termo}%")
-            ->orWhere('descricao', 'like', "%{$termo}%")
-            ->orderBy('data_evento', 'desc')
-            ->get();
-
-        $cartas = Carta::where('titulo', 'like', "%{$termo}%")
-            ->orWhere('conteudo', 'like', "%{$termo}%")
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return Inertia::render('Busca/Index', [
-            'termo' => $termo,
-            'resultados' => [
-                'noticias' => $noticias,
-                'eventos' => $eventos,
-                'cartas' => $cartas
-            ]
-        ]);
+    if (!$termo) {
+        return redirect()->route('home');
     }
+
+    $noticias = Noticia::where('titulo', 'like', "%{$termo}%")
+        ->orWhere('conteudo', 'like', "%{$termo}%")
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    $eventos = Evento::where('titulo', 'like', "%{$termo}%")
+        ->orWhere('descricao', 'like', "%{$termo}%")
+        ->orderBy('data_evento', 'desc')
+        ->get();
+
+    $cartas = Carta::where('titulo', 'like', "%{$termo}%")
+        ->orWhere('conteudo', 'like', "%{$termo}%")
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    // AJUSTE AQUI: Troque 'descricao' por 'conteudo' (ou o campo de texto da sua tabela)
+    $icones = HomeIcon::where('ativo', true)
+        ->where(function($query) use ($termo) {
+            $query->where('titulo', 'like', "%{$termo}%")
+                  ->orWhere('conteudo', 'like', "%{$termo}%"); // Nome correto da coluna
+        })
+        ->get();
+
+    return Inertia::render('Busca/Index', [
+        'termo' => $termo,
+        'resultados' => [
+            'noticias' => $noticias,
+            'eventos' => $eventos,
+            'cartas' => $cartas,
+            'icones' => $icones 
+        ]
+    ]);
+}
 }

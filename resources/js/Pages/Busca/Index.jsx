@@ -1,14 +1,15 @@
 import React from 'react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Link, Head } from '@inertiajs/react';
-import { FaNewspaper, FaCalendarAlt, FaScroll, FaSearch, FaExclamationCircle } from 'react-icons/fa';
+import { FaNewspaper, FaCalendarAlt, FaScroll, FaSearch, FaExclamationCircle, FaInfoCircle } from 'react-icons/fa';
 
 export default function BuscaIndex({ termo, resultados }) {
-    // Verifica se algum array tem conteúdo
+    // Verifica se algum array tem conteúdo, incluindo agora a nova seção de ícones/informações
     const temResultados = 
         (resultados.noticias && resultados.noticias.length > 0) || 
         (resultados.eventos && resultados.eventos.length > 0) || 
-        (resultados.cartas && resultados.cartas.length > 0);
+        (resultados.cartas && resultados.cartas.length > 0) ||
+        (resultados.icones && resultados.icones.length > 0);
 
     return (
         <PublicLayout>
@@ -45,6 +46,29 @@ export default function BuscaIndex({ termo, resultados }) {
                     ) : (
                         <div className="space-y-12">
                             
+                            {/* --- SEÇÃO DE ACESSO RÁPIDO / INFORMAÇÕES GERAIS --- */}
+                            {resultados.icones && resultados.icones.length > 0 && (
+                                <section>
+                                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2">
+                                        <span className="p-2 bg-blue-100 text-blue-600 rounded-lg"><FaInfoCircle /></span> 
+                                        Acesso Rápido e Informações ({resultados.icones.length})
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {resultados.icones.map(item => (
+                                            <Link key={item.id} href={route('icone.show', item.id)} className="group bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-700 transition duration-300">
+                                                <h4 className="font-bold text-lg text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
+                                                    {item.titulo}
+                                                </h4>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 mb-3">
+                                                    {item.descricao}
+                                                </p>
+                                                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Ver Informações &rarr;</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+
                             {/* --- SEÇÃO DE NOTÍCIAS --- */}
                             {resultados.noticias.length > 0 && (
                                 <section>
