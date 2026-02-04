@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
+import axios from 'axios';
 import { 
     FaUserTie, FaUsers, FaCalendarAlt, FaNewspaper, FaScroll, FaTimes, 
     FaMapMarkerAlt, FaPhone, FaWhatsapp, FaEnvelope, FaClock, 
@@ -19,6 +20,7 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
     const { auth } = usePage().props;
     const [selectedIcon, setSelectedIcon] = useState(null);
     const [openFaq, setOpenFaq] = useState(null);
+    const [pjeData, setPjeData] = useState(null);
 
     // Estados para Avaliação
     const [rating, setRating] = useState(0);
@@ -29,6 +31,13 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
     const [showLgpdModal, setShowLgpdModal] = useState(false);
     const [processing, setProcessing] = useState(false);
 
+    // Efeito para carregar dados do PJe
+    useEffect(() => {
+        axios.get(route('pje.tpu'))
+            .then(res => setPjeData(res.data))
+            .catch(err => console.error("PJe Offline", err));
+    }, []);
+
     const faqs = [
         { q: "Como parcelar débitos de IPTU/Dívida Ativa?", a: "O parcelamento pode ser feito de forma online pelo Portal do Cidadão da Serra ou presencialmente no guichê da PGM na sede da prefeitura." },
         { q: "Como solicitar uma certidão negativa?", a: "As certidões podem ser emitidas através do site oficial da Prefeitura na aba 'Serviços' ou via processo administrativo." },
@@ -37,8 +46,7 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
         { q: "Recebi uma citação judicial de cobrança. O que devo fazer?", a: "Você deve procurar o Departamento de Dívida Ativa da PGM imediatamente para verificar o débito e as opções de parcelamento, evitando medidas como penhora de bens ou bloqueios bancários."},
         { q: "Como solicitar uma Certidão Negativa de Débitos (CND)?", a: "Se não houver pendências, a certidão é emitida na hora pelo site da Prefeitura. Caso existam débitos em Dívida Ativa, a regularização deve ser feita junto à PGM antes da emissão."},
         { q: "Onde posso consultar os pareceres jurídicos da PGM?", a: "Pareceres referenciais e orientações jurídicas consolidadas para consulta pública estão disponíveis no Portal da Transparência da Serra, garantindo o controle de legalidade."},
-        { q: "Como entrar em contato com o setor de Dívida Ativa por telefone?", a: "Você pode ligar para o telefone geral da PGM no número (27) 3291-2067 e solicitar o ramal do setor de cobrança ou atendimento ao contribuinte."},
-        { q: "Qual o horário de atendimento presencial?", a: "O atendimento ao público na sede administrativa da Procuradoria ocorre de segunda a sexta-feira, das 08h às 18h."}
+        { q: "Como entrar em contato com o setor de Dívida Ativa por telefone?", a: "Você pode ligar para o telefone geral da PGM no número (27) 3291-2067 e solicitar o ramal do setor de cobrança ou atendimento ao contribuinte."}
     ];
 
     const staticItems = [
@@ -107,11 +115,11 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                     <div className="text-left z-0 flex-1">
                         <h3 className="text-2xl md:text-3xl font-extrabold text-blue-900 dark:text-white mb-4 border-b-4 border-blue-600 inline-block pb-2">O que fazemos</h3>
                         <div className="space-y-4 text-gray-600 dark:text-gray-300 text-sm md:text-base leading-relaxed text-justify">
-                            <p>A Procuradoria Geral do Município da Serra — <strong>PROGER</strong>, tem sua estrutura, funcionalidade e atribuições traçadas na Lei Municipal nº 2.356/2000 — Estrutura Organizacional do Poder Executivo e na Lei Municipal nº 5.539/2022 – Lei Orgânica da Procuradoria Geral do Município, tendo como objetivo promover a defesa, em juízo ou fora dele, dos direitos e interesses do Município. Também promove o exame de ordens e sentenças judiciais e orienta o prefeito, os secretários e as demais autoridades. É sua função propor ação civil pública e zelar pela fiel observância e aplicação das leis, decretos, portarias e regulamentos existentes. É ainda seu dever aprovar previamente as minutas dos editais de licitação, contratos, acordos, convênios, ajustes e quaisquer outros instrumentos em que haja um acordo de vontades para formação de vínculo obrigacional, oneroso ou não, qualquer que seja a denominação dada aos mesmos, celebrados por quaisquer órgãos ou entidades municipais.</p>
+                            <p>A Procuradoria Geral do Município da Serra <strong>PROGER</strong>, tem sua estrutura, funcionalidade e atribuições traçadas na Lei Municipal nº 2.356/2000 — Estrutura Organizacional do Poder Executivo e na Lei Municipal nº 5.539/2022 – Lei Orgânica da Procuradoria Geral do Município, tendo como objetivo promover a defesa, em juízo ou fora dele, dos direitos e interesses do Município. Também promove o exame de ordens e sentenças judiciais e orienta o prefeito, os secretários e as demais autoridades. É sua função propor ação civil pública e zelar pela fiel observância e aplicação das leis, decretos, portarias e regulamentos existentes. É ainda seu dever aprovar previamente as minutas dos editais de licitação, contratos, acordos, convênios, ajustes e quaisquer outros instrumentos em que haja um acordo de vontade.</p>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>           
 
             {/* SEÇÃO 1: ÍCONES FIXOS (ACESSO RÁPIDO) */}
             <div className="py-12 bg-gray-50 dark:bg-gray-900 transition-colors">
@@ -159,7 +167,34 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                 </div>
             )}
 
-            {/* SEÇÃO 3: AVALIAÇÕES E FEEDBACK (COM FEEDBACK STICKY) */}
+            {/* SEÇÃO 3: PJE (INTEGRAÇÃO DINÂMICA) */}
+            {pjeData && (
+                <div className="py-12 bg-blue-50 dark:bg-gray-900 transition-colors border-y border-blue-100 dark:border-gray-700">
+                    <div className="container mx-auto px-4">
+                        <h3 className="text-xl font-bold text-blue-900 dark:text-blue-400 mb-6 border-l-4 border-blue-900 pl-3 uppercase tracking-wider">Tribunal Virtual (PJe)</h3>
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm overflow-x-auto">
+                            <table className="w-full text-left text-sm">
+                                <thead>
+                                    <tr className="border-b dark:border-gray-700 text-gray-400 uppercase text-xs">
+                                        <th className="pb-3">Código</th>
+                                        <th className="pb-3">Descrição</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {pjeData.map((item, i) => (
+                                        <tr key={i} className="border-b dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-900 transition">
+                                            <td className="py-3 font-bold text-blue-600">{item.codigo}</td>
+                                            <td className="py-3 text-gray-600 dark:text-gray-300">{item.descricao}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* SEÇÃO 4: AVALIAÇÕES E FEEDBACK */}
             <div className="py-16 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12">
@@ -168,7 +203,7 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-                        {/* Formulário (Lado Esquerdo) */}
+                        {/* Formulário */}
                         <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg">
                             <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                                 <FaStar className="text-yellow-400" /> Deixe sua nota
@@ -189,7 +224,7 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                                     <div className="flex items-end pb-3">
                                         <label className="flex items-center gap-2 cursor-pointer group">
                                             <Checkbox checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)} />
-                                            <span className="text-sm text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors text-xs">Anônimo</span>
+                                            <span className="text-sm text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">Anônimo</span>
                                         </label>
                                     </div>
                                 </div>
@@ -198,12 +233,12 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                             </form>
                         </div>
 
-                        {/* Lista de Feedback (Lado Direito - FIXO AO ROLAR) */}
+                        {/* Relatos Recentes */}
                         <div className="lg:sticky lg:top-24 self-start">
                             <h4 className="text-lg font-bold text-gray-800 dark:text-white border-l-4 border-yellow-400 pl-3 mb-4">Relatos Recentes</h4>
                             <div className="space-y-4 max-h-[550px] overflow-y-auto pr-4 custom-scrollbar">
                                 {avaliacoes?.length > 0 ? avaliacoes.map((av) => (
-                                    <div key={av.id} className="bg-white dark:bg-gray-900 p-5 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm transition-hover hover:shadow-md">
+                                    <div key={av.id} className="bg-white dark:bg-gray-900 p-5 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
                                         <div className="flex justify-between items-start mb-3">
                                             <div className="flex items-center gap-3">
                                                 <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 p-2.5 rounded-full">
@@ -211,14 +246,14 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-sm text-gray-800 dark:text-white">{av.anonimo ? 'Anônimo' : av.nome}</p>
-                                                    <p className="text-[10px] text-gray-400 uppercase tracking-tighter">{new Date(av.created_at).toLocaleDateString()}</p>
+                                                    <p className="text-[10px] text-gray-400 uppercase">{new Date(av.created_at).toLocaleDateString()}</p>
                                                 </div>
                                             </div>
                                             <div className="flex text-yellow-400 text-xs">
                                                 {[...Array(5)].map((_, i) => (i < av.estrelas ? <FaStar key={i} /> : <FaRegStar key={i} />))}
                                             </div>
                                         </div>
-                                        <p className="text-gray-600 dark:text-gray-400 text-sm italic leading-relaxed">"{av.comentario}"</p>
+                                        <p className="text-gray-600 dark:text-gray-400 text-sm italic">"{av.comentario}"</p>
                                     </div>
                                 )) : (
                                     <div className="text-center py-20 text-gray-400 bg-white dark:bg-gray-800 rounded-2xl border-2 border-dashed dark:border-gray-700">
@@ -232,7 +267,7 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                 </div>
             </div>
 
-            {/* SEÇÃO 4: FAQ (ÚLTIMA SEÇÃO) */}
+            {/* SEÇÃO 5: FAQ */}
             <div className="py-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-800">
                 <div className="container mx-auto px-4 max-w-4xl">
                     <div className="text-center mb-10">
@@ -245,17 +280,12 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                     <div className="space-y-4">
                         {faqs.map((faq, idx) => (
                             <div key={idx} className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
-                                <button 
-                                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)} 
-                                    className="w-full text-left p-5 flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                                >
+                                <button onClick={() => setOpenFaq(openFaq === idx ? null : idx)} className="w-full text-left p-5 flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                                     <span className="font-bold text-gray-700 dark:text-gray-200">{faq.q}</span>
-                                    <span className={`text-blue-600 transition-transform duration-300 ${openFaq === idx ? 'rotate-180' : ''}`}>
-                                        <FaChevronDown />
-                                    </span>
+                                    <span className={`text-blue-600 transition-transform duration-300 ${openFaq === idx ? 'rotate-180' : ''}`}><FaChevronDown /></span>
                                 </button>
                                 {openFaq === idx && (
-                                    <div className="p-5 text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-950/40 border-t border-gray-100 dark:border-gray-700 leading-relaxed italic text-justify">
+                                    <div className="p-5 text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-950/40 border-t border-gray-100 dark:border-gray-700 leading-relaxed italic">
                                         {faq.a}
                                     </div>
                                 )}
@@ -292,7 +322,6 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                         </div>
                         <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
                             {selectedIcon.conteudo && <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 whitespace-pre-line text-justify">{selectedIcon.conteudo}</div>}
-                            
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 bg-gray-50 dark:bg-gray-900/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700">
                                 {selectedIcon.horario && (
                                     <div className="col-span-2 flex gap-3 items-center">
@@ -301,12 +330,7 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                                     </div>
                                 )}
                                 {selectedIcon.endereco && (
-                                    <a 
-                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedIcon.endereco + ' Serra ES')}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="col-span-2 flex items-start gap-4 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-blue-100 dark:border-blue-900/30 hover:border-blue-500 transition-all group"
-                                    >
+                                    <a href={`https://www.google.com/maps/search/${encodeURIComponent(selectedIcon.endereco + ' Serra ES')}`} target="_blank" rel="noopener noreferrer" className="col-span-2 flex items-start gap-4 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-blue-100 dark:border-blue-900/30 hover:border-blue-500 transition-all group">
                                         <FaMapMarkerAlt className="text-red-500 mt-1" size={20} />
                                         <div>
                                             <h4 className="font-bold text-xs uppercase text-blue-600 group-hover:underline">Ver localização no Google Maps</h4>
@@ -315,36 +339,6 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                                     </a>
                                 )}
                             </div>
-
-                            {/* Documentos */}
-                            {selectedIcon.documentos && selectedIcon.documentos.length > 0 && (
-                                <div className="mt-6 border-t dark:border-gray-700 pt-6">
-                                    <h4 className="font-bold mb-4 flex items-center gap-2"><FaFileAlt className="text-orange-500" /> Documentos Oficiais</h4>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        {selectedIcon.documentos.map((doc, idx) => (
-                                            <a key={idx} href={`/storage/${typeof doc === 'string' ? doc : doc.url}`} target="_blank" className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-orange-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition group">
-                                                <FaFileDownload className="text-gray-400 group-hover:text-orange-500" />
-                                                <span className="text-sm font-medium truncate">{typeof doc === 'string' ? doc.split('/').pop() : doc.nome}</span>
-                                            </a>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Galeria */}
-                            {selectedIcon.imagens && selectedIcon.imagens.length > 0 && (
-                                <div className="mt-6 border-t dark:border-gray-700 pt-6">
-                                    <h4 className="font-bold mb-4 flex items-center gap-2"><FaImages className="text-purple-500" /> Galeria de Fotos</h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        {selectedIcon.imagens.map((img, idx) => (
-                                            <div key={idx} className="group relative rounded-xl overflow-hidden shadow-sm aspect-[4/3] border border-gray-200 dark:border-gray-700">
-                                                <img src={`/storage/${img}`} alt="Galeria" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     </div>
                 )}

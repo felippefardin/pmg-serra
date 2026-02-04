@@ -159,4 +159,18 @@ class SiteController extends Controller
         ]
     ]);
 }
+public function buscarDadosTpu()
+    {
+        $url = config('services.pje.tpu_api');
+
+        // Realiza a requisição à API do PJe configurada no services.php
+        $response = Http::get($url);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return response()->json(['error' => 'Falha ao conectar ao PJe'], 500);
+    }
+
 }

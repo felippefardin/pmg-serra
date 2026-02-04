@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    // Adicione a configuração do PJe aqui
+    'pje' => [
+        'gateway_url' => env('PJE_GATEWAY_URL', 'https://gateway.cloud.pje.jus.br'),
+        'tpu_api'     => env('PJE_TPU_API'),
+    ],
+
 ];

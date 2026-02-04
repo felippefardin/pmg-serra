@@ -60,6 +60,7 @@ export default function PublicLayout({ children, title }) {
                             </div>
                         </Link>
                     </div>
+                    
 
                     {/* LADO DIREITO: Controles, Busca e Navegação */}
                     <div className="flex flex-col md:flex-row items-center gap-6">
@@ -72,6 +73,7 @@ export default function PublicLayout({ children, title }) {
                              />
                              <ThemeToggle className="bg-transparent text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800 rounded p-1" />
                         </div>
+                        
 
                         {/* --- BARRA DE BUSCA --- */}
                         <form onSubmit={handleSearch} className="hidden md:flex items-center relative">
