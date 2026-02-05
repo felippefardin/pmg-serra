@@ -13,24 +13,37 @@ use App\Models\Noticia;
 use App\Models\Carta;
 use App\Models\HomeIcon;
 use App\Models\Avaliacao;
+use Illuminate\Support\Facades\Http;
 
 class SiteController extends Controller
 {
     // Home
     public function home()
-    {
-        $icons = HomeIcon::where('ativo', true)->get();
+{
+    $icons = HomeIcon::where('ativo', true)->get();
+    $avaliacoes = Avaliacao::where('aprovado', true)
+        ->orderBy('created_at', 'desc')
+        ->take(10)
+        ->get();
 
-        $avaliacoes = Avaliacao::where('aprovado', true)
-            ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get();
-
-        return Inertia::render('Home', [
-            'dynamicIcons' => $icons,
-            'avaliacoes' => $avaliacoes
-        ]);
+    // Busca os dados do PJe internamente
+    $pjeData = [];
+    try {
+        $url = config('services.pje.tpu_api');
+        $response = Http::get($url);
+        if ($response->successful()) {
+            $pjeData = $response->json();
+        }
+    } catch (\Exception $e) {
+        // Silencia o erro para não quebrar a página se a API cair
     }
+
+    return Inertia::render('Home', [
+        'dynamicIcons' => $icons,
+        'avaliacoes' => $avaliacoes,
+        'pjeInitialData' => $pjeData // Passa como prop para o React
+    ]);
+}
 
     // Listagens
     public function procuradores() {
@@ -160,17 +173,17 @@ class SiteController extends Controller
     ]);
 }
 public function buscarDadosTpu()
-    {
-        $url = config('services.pje.tpu_api');
+{
+    $url = config('services.pje.tpu_api');
 
-        // Realiza a requisição à API do PJe configurada no services.php
-        $response = Http::get($url);
+    // O método withoutVerifying() ignora o erro de certificado SSL no seu local
+    $response = Http::withoutVerifying()->get($url);
 
-        if ($response->successful()) {
-            return $response->json();
-        }
-
-        return response()->json(['error' => 'Falha ao conectar ao PJe'], 500);
+    if ($response->successful()) {
+        return $response->json();
     }
+
+    return response()->json(['error' => 'Falha ao conectar ao PJe'], 500);
+}
 
 }
