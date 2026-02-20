@@ -2,20 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Avaliacao extends Model
 {
-    use HasFactory;
+    // Altere para 'avaliacaos' (exatamente como está na sua migration)
+    protected $table = 'avaliacao';
 
-    protected $table = 'avaliacaos'; // Forçar nome da tabela se necessário
-
-    protected $fillable = [
-        'nome',
-        'anonimo',
-        'estrelas',
-        'comentario',
-        'aprovado'
-    ];
+    protected $fillable = ['estrelas', 'comentario', 'nome', 'anonimo', 'aprovado'];
 }
