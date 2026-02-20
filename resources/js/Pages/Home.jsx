@@ -295,54 +295,183 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                 </div>
             </div>
 
-            {/* MODAIS */}
-            <Modal show={showLgpdModal} onClose={() => setShowLgpdModal(false)}>
-                <div className="p-6">
-                    <h2 className="text-lg font-bold dark:text-gray-100 flex items-center gap-2"><FaCheckCircle className="text-green-600" /> Consentimento LGPD</h2>
-                    <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">Ao clicar em confirmar, você autoriza a PGM Serra a exibir sua nota e comentário publicamente para fins de transparência administrativa.</p>
-                    <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton onClick={() => setShowLgpdModal(false)}>Cancelar</SecondaryButton>
-                        <PrimaryButton onClick={confirmSubmit} disabled={processing}>Concordo e Enviar</PrimaryButton>
+            {/* MODAL DE DETALHES NA HOME */}
+<Modal show={!!selectedIcon} onClose={closeModal} maxWidth="2xl">
+    {selectedIcon && (
+        <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+            {/* Cabeçalho */}
+            <div className={`${selectedIcon.cor || 'bg-blue-600'} p-6 flex items-center justify-between rounded-t-lg text-white shadow-lg`}>
+                <div className="flex items-center gap-4">
+                    <div className="p-2 bg-white/20 rounded-full">
+                        {renderDynamicIcon(selectedIcon.icone, 32)}
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-bold">{selectedIcon.titulo || selectedIcon.label}</h2>
+                        <p className="text-white/80 text-xs font-medium uppercase tracking-widest">{selectedIcon.label}</p>
                     </div>
                 </div>
-            </Modal>
+                <button onClick={closeModal} className="hover:bg-white/20 p-2 rounded-full transition">
+                    <FaTimes size={24} />
+                </button>
+            </div>
 
-            <Modal show={!!selectedIcon} onClose={closeModal} maxWidth="2xl">
-                {selectedIcon && (
-                    <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-                        <div className={`${selectedIcon.cor} p-6 flex items-center justify-between rounded-t-lg text-white shadow-lg`}>
-                            <div className="flex items-center gap-4">
-                                <div className="p-2 bg-white/20 rounded-full">{renderDynamicIcon(selectedIcon.icone, 32)}</div>
-                                <div>
-                                    <h2 className="text-2xl font-bold">{selectedIcon.titulo || selectedIcon.label}</h2>
-                                    <p className="text-white/80 text-xs font-medium uppercase tracking-widest">{selectedIcon.label}</p>
-                                </div>
-                            </div>
-                            <button onClick={closeModal} className="hover:bg-white/20 p-2 rounded-full transition"><FaTimes size={24} /></button>
+            {/* Corpo do Modal */}
+            <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+                
+                {/* Conteúdo Principal */}
+                {selectedIcon.conteudo && (
+                    <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 whitespace-pre-wrap text-justify leading-relaxed">
+                        {selectedIcon.conteudo}
+                    </div>
+                )}
+
+{/* Galeria de Imagens Ajustada e Clicável */}
+{selectedIcon.imagens?.length > 0 && (
+    <div className="mt-4">
+        <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+            <FaImages className="text-purple-500" /> Galeria de Imagens
+        </h4>
+        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
+            {selectedIcon.imagens.map((img, index) => (
+                <div 
+                    key={index} 
+                    className="flex-shrink-0 w-64 h-64 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md bg-gray-100 dark:bg-gray-900 snap-center group relative"
+                >
+                    {/* Link para abrir a imagem original em outra aba */}
+                    <a 
+                        href={`/storage/${img}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="block w-full h-full cursor-zoom-in"
+                        title="Clique para ver em tamanho real"
+                    >
+                        <img 
+                            src={`/storage/${img}`} 
+                            className="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-105" 
+                            alt={`Galeria ${index + 1}`} 
+                        />
+                        {/* Overlay visual ao passar o mouse */}
+                        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-white text-xs font-bold px-2 py-1 rounded shadow-sm">
+                                Abrir original
+                            </span>
                         </div>
-                        <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
-                            {selectedIcon.conteudo && <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 whitespace-pre-line text-justify">{selectedIcon.conteudo}</div>}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 bg-gray-50 dark:bg-gray-900/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700">
-                                {selectedIcon.horario && (
-                                    <div className="col-span-2 flex gap-3 items-center">
-                                        <FaClock className="text-blue-500" />
-                                        <p className="text-sm font-medium">{selectedIcon.dias} • {selectedIcon.horario}</p>
-                                    </div>
-                                )}
-                                {selectedIcon.endereco && (
-                                    <a href={`https://www.google.com/maps/search/${encodeURIComponent(selectedIcon.endereco + ' Serra ES')}`} target="_blank" rel="noopener noreferrer" className="col-span-2 flex items-start gap-4 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-blue-100 dark:border-blue-900/30 hover:border-blue-500 transition-all group">
-                                        <FaMapMarkerAlt className="text-red-500 mt-1" size={20} />
-                                        <div>
-                                            <h4 className="font-bold text-xs uppercase text-blue-600 group-hover:underline">Ver localização no Google Maps</h4>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">{selectedIcon.endereco}</p>
-                                        </div>
-                                    </a>
-                                )}
-                            </div>
+                    </a>
+                </div>
+            ))}
+        </div>
+        <p className="text-[10px] text-gray-400 mt-1 italic">* Clique na imagem para visualizar o arquivo original.</p>
+    </div>
+)}
+
+                {/* Documentos Anexados */}
+                {selectedIcon.documentos?.length > 0 && (
+                    <div className="mt-4">
+                        <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                            <FaFileAlt className="text-orange-500" /> Documentos
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {selectedIcon.documentos.map((doc, index) => (
+                                <a 
+                                    key={index} 
+                                    href={`/storage/${doc.url}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-orange-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition group"
+                                >
+                                    <FaFileDownload className="text-gray-400 group-hover:text-orange-500 flex-shrink-0" />
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                                        {doc.nome}
+                                    </span>
+                                </a>
+                            ))}
                         </div>
                     </div>
                 )}
-            </Modal>
+
+                {/* Links Externos */}
+                {selectedIcon.link_externo?.length > 0 && (
+                    <div className="mt-4">
+                        <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                            <FaLink className="text-blue-500" /> Links Úteis
+                        </h4>
+                        <div className="space-y-2">
+                            {selectedIcon.link_externo.map((link, idx) => (
+                                <a key={idx} href={link.url} target="_blank" className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600 hover:bg-blue-50 transition group">
+                                    <span className="text-sm font-medium text-blue-700 dark:text-blue-300">{link.nome}</span>
+                                    <FaExternalLinkAlt className="text-gray-400 group-hover:text-blue-500" size={12} />
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Bloco de Contatos e Localização */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 bg-gray-50 dark:bg-gray-900/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700">
+                    
+                    {/* Funcionamento */}
+                    {(selectedIcon.horario || selectedIcon.dias) && (
+                        <div className="col-span-2 flex gap-3 items-start">
+                            <FaClock className="text-blue-500 mt-1" />
+                            <div>
+                                <h4 className="font-bold text-xs uppercase text-gray-400">Funcionamento</h4>
+                                <p className="text-sm font-medium">{selectedIcon.dias} {selectedIcon.horario && `• ${selectedIcon.horario}`}</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Endereço */}
+                    {selectedIcon.endereco && (
+                        <div className="col-span-2 flex items-start gap-3">
+                            <FaMapMarkerAlt className="text-red-500 mt-1" />
+                            <div>
+                                <h4 className="font-bold text-xs uppercase text-gray-400">Localização</h4>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">{selectedIcon.endereco}</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Telefone */}
+                    {selectedIcon.telefone && (
+                        <div className="flex items-center gap-3">
+                            <FaPhone className="text-green-600" />
+                            <div>
+                                <h4 className="font-bold text-[10px] uppercase text-gray-400">Telefone</h4>
+                                <p className="text-sm">{selectedIcon.telefone}</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* WhatsApp */}
+                    {selectedIcon.whatsapp && (
+                        <div className="flex items-center gap-3">
+                            <FaWhatsapp className="text-green-500" />
+                            <div>
+                                <h4 className="font-bold text-[10px] uppercase text-gray-400">WhatsApp</h4>
+                                <a href={`https://wa.me/${selectedIcon.whatsapp.replace(/\D/g, '')}`} target="_blank" className="text-sm text-blue-600 hover:underline">
+                                    {selectedIcon.whatsapp}
+                                </a>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Email */}
+                    {selectedIcon.email && (
+                        <div className="flex items-center gap-3 md:col-span-2 border-t dark:border-gray-700 pt-3 mt-1">
+                            <FaEnvelope className="text-gray-500" />
+                            <div>
+                                <h4 className="font-bold text-[10px] uppercase text-gray-400">E-mail</h4>
+                                <a href={`mailto:${selectedIcon.email}`} className="text-sm text-blue-600 hover:underline">
+                                    {selectedIcon.email}
+                                </a>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    )}
+</Modal>
         </PublicLayout>
     );
 }

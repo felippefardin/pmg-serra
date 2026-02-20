@@ -63,7 +63,7 @@ export default function Assessores({ lista }) {
                                         <img 
                                             src={`/storage/${pessoa.foto_path}`} 
                                             alt={pessoa.nome} 
-                                            className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110" 
+                                            className="w-full h-full object-contain bg-gray-100 dark:bg-gray-800 transition-transform duration-500 group-hover:scale-105" 
                                         />
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">

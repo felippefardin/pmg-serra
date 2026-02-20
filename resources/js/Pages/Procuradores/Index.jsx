@@ -60,10 +60,10 @@ export default function Procuradores({ lista }) {
                                 <div className="h-72 w-full bg-gray-200 dark:bg-gray-700 overflow-hidden relative">
                                     {pessoa.foto_path ? (
                                         <img 
-                                            src={`/storage/${pessoa.foto_path}`} 
-                                            alt={pessoa.nome} 
-                                            className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110" 
-                                        />
+                                        src={`/storage/${pessoa.foto_path}`} 
+                                        alt={pessoa.nome} 
+                                        className="w-full h-full object-contain bg-gray-100 dark:bg-gray-800 transition-transform duration-500 group-hover:scale-105" 
+                                    />
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">
                                             <FaIdCard size={48} />
