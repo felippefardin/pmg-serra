@@ -48,9 +48,19 @@ export default function Show({ evento }) {
                         </h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {evento.fotos.map((foto) => (
-                                <div key={foto.id} className="h-48 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-transform hover:scale-105 cursor-pointer bg-gray-100 dark:bg-gray-700">
-                                    <img src={`/storage/${foto.caminho_foto}`} alt="Galeria" className="w-full h-full object-cover" />
-                                </div>
+                                <a 
+                                    key={foto.id} 
+                                    href={`/storage/${foto.caminho_foto}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="h-48 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-transform hover:scale-105 cursor-pointer bg-gray-100 dark:bg-gray-700 block"
+                                >
+                                    <img 
+                                        src={`/storage/${foto.caminho_foto}`} 
+                                        alt="Galeria" 
+                                        className="w-full h-full object-cover" 
+                                    />
+                                </a>
                             ))}
                         </div>
                     </div>
