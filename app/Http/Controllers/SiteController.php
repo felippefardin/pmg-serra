@@ -14,36 +14,41 @@ use App\Models\Carta;
 use App\Models\HomeIcon;
 use App\Models\Avaliacao;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SiteController extends Controller
 {
     // Home
     public function home()
-{
-    $icons = HomeIcon::where('ativo', true)->get();
-    $avaliacoes = Avaliacao::where('aprovado', true)
-        ->orderBy('created_at', 'desc')
-        ->take(10)
-        ->get();
+    {
+        $icons = HomeIcon::where('ativo', true)->get();
+        $avaliacoes = Avaliacao::where('aprovado', true)
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
 
-    // Busca os dados do PJe internamente
-    $pjeData = [];
-    try {
+        // Busca os dados do PJe internamente com segurança
+        $pjeData = [];
         $url = config('services.pje.tpu_api');
-        $response = Http::get($url);
-        if ($response->successful()) {
-            $pjeData = $response->json();
+        
+        if (!empty($url)) {
+            try {
+                // withoutVerifying() ignora erros de certificado SSL em ambiente local
+                $response = Http::withoutVerifying()->timeout(5)->get($url);
+                if ($response->successful()) {
+                    $pjeData = $response->json();
+                }
+            } catch (\Exception $e) {
+                Log::error('Erro ao conectar na API PJe: ' . $e->getMessage());
+            }
         }
-    } catch (\Exception $e) {
-        // Silencia o erro para não quebrar a página se a API cair
-    }
 
-    return Inertia::render('Home', [
-        'dynamicIcons' => $icons,
-        'avaliacoes' => $avaliacoes,
-        'pjeInitialData' => $pjeData // Passa como prop para o React
-    ]);
-}
+        return Inertia::render('Home', [
+            'dynamicIcons' => $icons,
+            'avaliacoes' => $avaliacoes,
+            'pjeInitialData' => $pjeData
+        ]);
+    }
 
     // Listagens
     public function procuradores() {
@@ -97,7 +102,6 @@ class SiteController extends Controller
 
     // Processa o envio
     public function enviarContato(Request $request) {
-        // 1. Validação
         $validado = $request->validate([
             'nome' => 'required|string|max:255',
             'email' => 'required|email',
@@ -107,83 +111,79 @@ class SiteController extends Controller
             'mensagem' => 'required|string',
         ]);
 
-        // 2. Roteamento de E-mails
         $emailsPorSetor = [
             'Dívida Ativa (DECODAM)' => 'decodam.proger@serra.es.gov.br',
-            'Cartório (CRCDD)'       => 'cartorio.progerserra.es@gmail.com',
-            'Contábil (NTC)'         => 'nucleotecnicocontabil@gmail.com',
-            'Gabinete'               => 'proger@serra.es.gov.br',
+            'Cartório (CRCDD)'      => 'cartorio.progerserra.es@gmail.com',
+            'Contábil (NTC)'        => 'nucleotecnicocontabil@gmail.com',
+            'Gabinete'              => 'proger@serra.es.gov.br',
         ];
 
         $destinatario = $emailsPorSetor[$validado['assunto']] ?? 'proger@serra.es.gov.br';
 
-      
         try {
             Mail::to($destinatario)->send(new FaleConoscoMail($validado));            
-            
             return redirect()->back()->with('success', 'Sua mensagem foi enviada com sucesso! Aguarde o retorno.');
-        
         } catch (\Exception $e) {
-      
             return redirect()->back()->with('error', 'Sua mensagem não pôde ser enviada. Detalhe do erro: ' . $e->getMessage());
         }
     }
 
     // Busca Global
-    
     public function search(Request $request)
-{
-    $termo = $request->input('q');
+    {
+        $termo = $request->input('q');
 
-    if (!$termo) {
-        return redirect()->route('home');
+        if (!$termo) {
+            return redirect()->route('home');
+        }
+
+        $noticias = Noticia::where('titulo', 'like', "%{$termo}%")
+            ->orWhere('conteudo', 'like', "%{$termo}%")
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $eventos = Evento::where('titulo', 'like', "%{$termo}%")
+            ->orWhere('descricao', 'like', "%{$termo}%")
+            ->orderBy('data_evento', 'desc')
+            ->get();
+
+        $cartas = Carta::where('titulo', 'like', "%{$termo}%")
+            ->orWhere('conteudo', 'like', "%{$termo}%")
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $icones = HomeIcon::where('ativo', true)
+            ->where(function($query) use ($termo) {
+                $query->where('titulo', 'like', "%{$termo}%")
+                      ->orWhere('conteudo', 'like', "%{$termo}%");
+            })
+            ->get();
+
+        return Inertia::render('Busca/Index', [
+            'termo' => $termo,
+            'resultados' => [
+                'noticias' => $noticias,
+                'eventos' => $eventos,
+                'cartas' => $cartas,
+                'icones' => $icones 
+            ]
+        ]);
     }
 
-    $noticias = Noticia::where('titulo', 'like', "%{$termo}%")
-        ->orWhere('conteudo', 'like', "%{$termo}%")
-        ->orderBy('created_at', 'desc')
-        ->get();
+    public function buscarDadosTpu()
+    {
+        $url = config('services.pje.tpu_api');
+        
+        if (empty($url)) {
+            return response()->json(['error' => 'URL não configurada'], 400);
+        }
 
-    $eventos = Evento::where('titulo', 'like', "%{$termo}%")
-        ->orWhere('descricao', 'like', "%{$termo}%")
-        ->orderBy('data_evento', 'desc')
-        ->get();
+        $response = Http::withoutVerifying()->get($url);
 
-    $cartas = Carta::where('titulo', 'like', "%{$termo}%")
-        ->orWhere('conteudo', 'like', "%{$termo}%")
-        ->orderBy('created_at', 'desc')
-        ->get();
+        if ($response->successful()) {
+            return $response->json();
+        }
 
-    // AJUSTE AQUI: Troque 'descricao' por 'conteudo' (ou o campo de texto da sua tabela)
-    $icones = HomeIcon::where('ativo', true)
-        ->where(function($query) use ($termo) {
-            $query->where('titulo', 'like', "%{$termo}%")
-                  ->orWhere('conteudo', 'like', "%{$termo}%"); // Nome correto da coluna
-        })
-        ->get();
-
-    return Inertia::render('Busca/Index', [
-        'termo' => $termo,
-        'resultados' => [
-            'noticias' => $noticias,
-            'eventos' => $eventos,
-            'cartas' => $cartas,
-            'icones' => $icones 
-        ]
-    ]);
-}
-public function buscarDadosTpu()
-{
-    $url = config('services.pje.tpu_api');
-
-    // O método withoutVerifying() ignora o erro de certificado SSL no seu local
-    $response = Http::withoutVerifying()->get($url);
-
-    if ($response->successful()) {
-        return $response->json();
+        return response()->json(['error' => 'Falha ao conectar ao PJe'], 500);
     }
-
-    return response()->json(['error' => 'Falha ao conectar ao PJe'], 500);
-}
-
 }
