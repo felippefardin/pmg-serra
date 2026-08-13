@@ -41,6 +41,7 @@ class UserController extends Controller
             'matricula' => $request->matricula,
             'cpf' => $request->cpf,
             'password' => Hash::make($request->password),
+            'is_admin' => true,
         ]);
 
         return redirect()->route('dashboard')->with('message', 'Usuário criado com sucesso!');

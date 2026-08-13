@@ -138,7 +138,8 @@ class HomeIconController extends Controller
         // Gerenciar Imagens
         $currentImagens = $icon->imagens ?? [];
         if (!empty($data['imagens_removidas'])) {
-            foreach ($data['imagens_removidas'] as $imageToRemove) {
+            $ownedImages = array_intersect($data['imagens_removidas'], $currentImagens);
+            foreach ($ownedImages as $imageToRemove) {
                 Storage::disk('public')->delete($imageToRemove);
                 $currentImagens = array_values(array_diff($currentImagens, [$imageToRemove]));
             }
@@ -159,7 +160,9 @@ class HomeIconController extends Controller
         // Gerenciar Documentos
         $currentDocs = $icon->documentos ?? [];
         if (!empty($data['documentos_removidos'])) {
-            foreach ($data['documentos_removidos'] as $urlToRemove) {
+            $ownedDocumentUrls = array_column($currentDocs, 'url');
+            $documentsToRemove = array_intersect($data['documentos_removidos'], $ownedDocumentUrls);
+            foreach ($documentsToRemove as $urlToRemove) {
                 Storage::disk('public')->delete($urlToRemove);
                 $currentDocs = array_filter($currentDocs, fn($doc) => $doc['url'] !== $urlToRemove);
             }

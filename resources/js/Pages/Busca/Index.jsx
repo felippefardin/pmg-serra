@@ -39,7 +39,7 @@ export default function BuscaIndex({ termo, resultados }) {
                             <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
                                 Não encontramos nada com "<strong>{termo}</strong>". Tente verificar a ortografia ou usar palavras mais genéricas.
                             </p>
-                            <Link href="/" className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition font-medium">
+                            <Link href={route('home')} className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition font-medium">
                                 Voltar para o Início
                             </Link>
                         </div>

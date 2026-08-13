@@ -50,11 +50,11 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
     ];
 
     const staticItems = [
-        { label: 'Procuradores', iconComponent: <FaUserTie size={40} />, link: '/procuradores', color: 'bg-blue-600' },
-        { label: 'Assessores', iconComponent: <FaUsers size={40} />, link: '/assessores', color: 'bg-green-600' },
-        { label: 'Programas, projetos e ações', iconComponent: <FaCalendarAlt size={40} />, link: '/eventos', color: 'bg-orange-500' },
-        { label: 'Notícias', iconComponent: <FaNewspaper size={40} />, link: '/noticias', color: 'bg-indigo-600' },
-        { label: 'Carta do Procurador', iconComponent: <FaScroll size={40} />, link: '/cartas', color: 'bg-red-700' },
+        { label: 'Procuradores', iconComponent: <FaUserTie size={40} />, link: route('procuradores'), color: 'bg-blue-600' },
+        { label: 'Assessores', iconComponent: <FaUsers size={40} />, link: route('assessores'), color: 'bg-green-600' },
+        { label: 'Programas, projetos e ações', iconComponent: <FaCalendarAlt size={40} />, link: route('eventos'), color: 'bg-orange-500' },
+        { label: 'Notícias', iconComponent: <FaNewspaper size={40} />, link: route('noticias'), color: 'bg-indigo-600' },
+        { label: 'Carta do Procurador', iconComponent: <FaScroll size={40} />, link: route('cartas'), color: 'bg-red-700' },
     ];
 
     const handleDelete = (e, id) => {
@@ -109,7 +109,7 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                 <div className="container mx-auto px-4 flex flex-col md:flex-row items-start justify-start gap-12">
                     <div className="flex-shrink-0 pl-2 md:pl-0 relative z-10 self-center md:self-start">
                         <a href="https://www.serra.es.gov.br/" target="_blank" rel="noopener noreferrer" className="block cursor-pointer transition-transform hover:scale-110">
-                            <img src="/img/brasao_dois.png" alt="Brasão" className="h-40 md:h-52 drop-shadow-2xl scale-125 object-contain dark:invert dark:brightness-200" />
+                            <img src="img/brasao_dois.png" alt="Brasão" className="h-40 md:h-52 drop-shadow-2xl scale-125 object-contain dark:invert dark:brightness-200" />
                         </a>
                     </div>
                     <div className="text-left z-0 flex-1">
@@ -339,14 +339,14 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                 >
                     {/* Link para abrir a imagem original em outra aba */}
                     <a 
-                        href={`/storage/${img}`} 
+                        href={`${route('home')}storage/${img}`} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="block w-full h-full cursor-zoom-in"
                         title="Clique para ver em tamanho real"
                     >
                         <img 
-                            src={`/storage/${img}`} 
+                            src={`${route('home')}storage/${img}`} 
                             className="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-105" 
                             alt={`Galeria ${index + 1}`} 
                         />
@@ -374,7 +374,7 @@ export default function Home({ titulo, descricao, dynamicIcons, avaliacoes }) {
                             {selectedIcon.documentos.map((doc, index) => (
                                 <a 
                                     key={index} 
-                                    href={`/storage/${doc.url}`} 
+                                    href={`${route('home')}storage/${doc.url}`} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-orange-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition group"

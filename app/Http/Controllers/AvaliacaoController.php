@@ -44,8 +44,12 @@ class AvaliacaoController extends Controller
     // Painel Admin - Aprovar/Reprovar
     public function updateStatus(Request $request, $id)
     {
+        $validated = $request->validate([
+            'aprovado' => 'required|boolean',
+        ]);
+
         $avaliacao = Avaliacao::findOrFail($id);
-        $avaliacao->aprovado = $request->aprovado; // true ou false
+        $avaliacao->aprovado = $validated['aprovado'];
         $avaliacao->save();
 
         return back()->with('success', 'Status atualizado com sucesso.');

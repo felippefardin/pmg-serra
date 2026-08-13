@@ -50,4 +50,12 @@ return new class extends Migration
         $table->timestamps();
     });
 }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('noticias');
+        Schema::dropIfExists('eventos');
+        Schema::dropIfExists('assessores');
+        Schema::dropIfExists('procuradores');
+    }
 };

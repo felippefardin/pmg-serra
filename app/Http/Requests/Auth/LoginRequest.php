@@ -42,8 +42,13 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // Tenta logar usando 'nome_acesso' e 'password'
-        if (! Auth::attempt($this->only('nome_acesso', 'password'), $this->boolean('remember'))) {
+        $login = $this->string('nome_acesso')->toString();
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'nome_acesso';
+
+        if (! Auth::attempt([
+            $field => $login,
+            'password' => $this->input('password'),
+        ], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

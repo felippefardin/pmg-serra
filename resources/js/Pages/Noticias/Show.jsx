@@ -11,7 +11,7 @@ export default function Show({ noticia }) {
 
             <header className="bg-indigo-600 dark:bg-gray-900 text-white py-6 shadow-md border-b dark:border-gray-800">
                 <div className="container mx-auto px-4">
-                    <Link href="/noticias" className="flex items-center gap-2 hover:text-indigo-200 dark:hover:text-gray-300 font-bold uppercase text-sm">
+                    <Link href={route('noticias')} className="flex items-center gap-2 hover:text-indigo-200 dark:hover:text-gray-300 font-bold uppercase text-sm">
                         <FaArrowLeft /> Voltar para Notícias
                     </Link>
                 </div>

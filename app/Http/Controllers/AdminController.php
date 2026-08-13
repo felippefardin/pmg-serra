@@ -71,6 +71,8 @@ class AdminController extends Controller
             'chamativo' => 'required|string|max:150',
             'conteudo' => 'required|string',
             'capa' => 'nullable|image|max:2048',
+            'galeria' => 'nullable|array',
+            'galeria.*' => 'image|max:2048',
         ]);
 
         $data = $request->only(['titulo', 'chamativo', 'conteudo']);
@@ -131,7 +133,8 @@ class AdminController extends Controller
             'descricao' => 'required|string',
             'data_evento' => 'required|date',
             'capa' => 'nullable|image|max:2048',
-            'galeria.*' => 'nullable|image|max:2048'
+            'galeria' => 'nullable|array',
+            'galeria.*' => 'image|max:2048',
         ]);
 
         $data = $request->only(['titulo', 'chamativo', 'descricao', 'data_evento']);
@@ -170,6 +173,9 @@ class AdminController extends Controller
             'chamativo' => 'nullable|string|max:150',
             'descricao' => 'required|string',
             'data_evento' => 'required|date',
+            'capa' => 'nullable|image|max:2048',
+            'galeria' => 'nullable|array',
+            'galeria.*' => 'image|max:2048',
         ]);
 
         $data = $request->only(['titulo', 'chamativo', 'descricao', 'data_evento']);
@@ -264,6 +270,8 @@ class AdminController extends Controller
             'autor' => 'required|string|max:255',
             'conteudo' => 'required|string',
             'capa' => 'nullable|image|max:2048',
+            'galeria' => 'nullable|array',
+            'galeria.*' => 'image|max:2048',
         ]);
 
         $data = $request->only(['titulo', 'chamativo', 'autor', 'conteudo']);

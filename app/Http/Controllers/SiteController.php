@@ -33,8 +33,9 @@ class SiteController extends Controller
         
         if (!empty($url)) {
             try {
-                // withoutVerifying() ignora erros de certificado SSL em ambiente local
-                $response = Http::withoutVerifying()->timeout(5)->get($url);
+                $response = Http::withOptions([
+                    'verify' => config('services.pje.verify_ssl', true),
+                ])->timeout(5)->get($url);
                 if ($response->successful()) {
                     $pjeData = $response->json();
                 }
@@ -124,7 +125,12 @@ class SiteController extends Controller
             Mail::to($destinatario)->send(new FaleConoscoMail($validado));            
             return redirect()->back()->with('success', 'Sua mensagem foi enviada com sucesso! Aguarde o retorno.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Sua mensagem não pôde ser enviada. Detalhe do erro: ' . $e->getMessage());
+            Log::error('Erro ao enviar mensagem de contato', [
+                'exception' => $e,
+                'destinatario' => $destinatario,
+            ]);
+
+            return redirect()->back()->with('error', 'Sua mensagem não pôde ser enviada. Tente novamente mais tarde.');
         }
     }
 
@@ -178,10 +184,16 @@ class SiteController extends Controller
             return response()->json(['error' => 'URL não configurada'], 400);
         }
 
-        $response = Http::withoutVerifying()->get($url);
+        try {
+            $response = Http::withOptions([
+                'verify' => config('services.pje.verify_ssl', true),
+            ])->timeout(5)->get($url);
 
-        if ($response->successful()) {
-            return $response->json();
+            if ($response->successful()) {
+                return $response->json();
+            }
+        } catch (\Exception $e) {
+            Log::warning('Falha ao consultar a API PJe', ['exception' => $e]);
         }
 
         return response()->json(['error' => 'Falha ao conectar ao PJe'], 500);

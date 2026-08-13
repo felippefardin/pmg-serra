@@ -20,7 +20,7 @@ export default function Authenticated({ user, header, children }) {
                         {/* LADO ESQUERDO */}
                         <div className="flex items-center">
                             <div className="shrink-0 flex items-center">
-                                <Link href="/">
+                                <Link href={route('home')}>
                                     <ApplicationLogo className="block h-9 w-auto fill-current text-black dark:text-white transition-colors" />
                                 </Link>
                             </div>

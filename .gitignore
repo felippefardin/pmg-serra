@@ -19,6 +19,8 @@
 /storage/*.key
 /storage/pail
 /vendor
+/pmg_serra
+*.sqlite
 Homestead.json
 Homestead.yaml
 Thumbs.db

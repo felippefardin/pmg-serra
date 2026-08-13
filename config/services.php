@@ -26,6 +26,7 @@ return [
     // Adicione este bloco:
     'pje' => [
         'tpu_api' => env('PJE_TPU_API'),
+        'verify_ssl' => env('PJE_VERIFY_SSL', true),
     ],
 
 ];

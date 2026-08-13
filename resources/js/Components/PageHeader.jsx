@@ -20,7 +20,7 @@ export default function PageHeader({
                     
                     <div className="flex flex-col gap-2">
                         <nav className="flex items-center gap-2 text-xs uppercase tracking-wider font-semibold opacity-80">
-                            <Link href="/" className="hover:text-white/100 flex items-center gap-1 transition-opacity">
+                            <Link href={route('home')} className="hover:text-white/100 flex items-center gap-1 transition-opacity">
                                 <FaHome /> Inícios
                             </Link>
                             {breadcrumbs.map((crumb, index) => (

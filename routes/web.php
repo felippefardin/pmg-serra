@@ -18,7 +18,7 @@ use App\Http\Controllers\AvaliacaoController;
 Route::get('/', [SiteController::class, 'home'])->name('home');
 
 // Rota para integração PJe
-Route::get('/pje/tpu', [SiteController::class, 'buscarDadosTpu'])->name('pje.tpu');
+Route::get('/pje/tpu', [SiteController::class, 'buscarDadosTpu'])->middleware('throttle:30,1')->name('pje.tpu');
 
 // Listagens
 Route::get('/procuradores', [SiteController::class, 'procuradores'])->name('procuradores');
@@ -28,7 +28,7 @@ Route::get('/noticias', [SiteController::class, 'noticias'])->name('noticias');
 Route::get('/cartas', [SiteController::class, 'cartas'])->name('cartas');
 Route::get('/busca', [SiteController::class, 'search'])->name('site.search');
 Route::get('/fale-conosco', [SiteController::class, 'contato'])->name('contato.index');
-Route::post('/fale-conosco', [SiteController::class, 'enviarContato'])->name('contato.send');
+Route::post('/fale-conosco', [SiteController::class, 'enviarContato'])->middleware('throttle:5,1')->name('contato.send');
 
 // Visualização Individual
 Route::get('/evento/{id}', [SiteController::class, 'showEvento'])->name('evento.show');
@@ -39,14 +39,14 @@ Route::get('/carta/{id}', [SiteController::class, 'showCarta'])->name('carta.sho
 Route::get('/informacao/{id}', [HomeIconController::class, 'showPublic'])->name('icone.show');
 
 // Enviar Avaliação (Público)
-Route::post('/avaliar', [AvaliacaoController::class, 'store'])->name('avaliacao.store');
+Route::post('/avaliar', [AvaliacaoController::class, 'store'])->middleware('throttle:5,1')->name('avaliacao.store');
 
 
 // ==========================================
 // ÁREA ADMINISTRATIVA (Requer Login)
 // ==========================================
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     
     // Painel Principal
     Route::get('/dashboard', function () { return Inertia::render('Dashboard'); })->name('dashboard');

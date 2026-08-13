@@ -32,7 +32,7 @@ export default function Login({ status, canResetPassword }) {
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="nome_acesso" value="Nome de Acesso (Prefeitura)" />
+                    <InputLabel htmlFor="nome_acesso" value="Nome de acesso ou e-mail" />
 
                     <TextInput
                         id="nome_acesso"
@@ -80,15 +80,7 @@ export default function Login({ status, canResetPassword }) {
                         Entrar
                     </PrimaryButton>
 
-                    <div className="flex items-center justify-between text-sm mt-2">
-                        {/* LINK PARA CRIAR CONTA (REGISTRO) */}
-                        <Link 
-                            href={route('register')}
-                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-bold hover:underline"
-                        >
-                            Criar Conta
-                        </Link>
-
+                    <div className="flex items-center justify-end text-sm mt-2">
                         {canResetPassword && (
                             <Link
                                 href={route('password.request')}

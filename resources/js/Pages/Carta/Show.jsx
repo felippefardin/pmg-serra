@@ -11,7 +11,7 @@ export default function Show({ carta }) {
 
             <header className="bg-red-700 dark:bg-gray-900 text-white py-6 shadow-md border-b dark:border-gray-800">
                 <div className="container mx-auto px-4">
-                    <Link href="/cartas" className="flex items-center gap-2 hover:text-red-200 dark:hover:text-gray-300 font-bold uppercase text-sm">
+                    <Link href={route('cartas')} className="flex items-center gap-2 hover:text-red-200 dark:hover:text-gray-300 font-bold uppercase text-sm">
                         <FaArrowLeft /> Voltar para Cartas
                     </Link>
                 </div>

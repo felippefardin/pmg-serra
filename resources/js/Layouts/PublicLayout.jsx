@@ -43,7 +43,7 @@ export default function PublicLayout({ children, title }) {
                     
                     {/* LADO ESQUERDO: Logo e Título */}
                     <div className="flex items-center justify-between w-full md:w-auto">
-                        <Link href="/" className="flex items-center gap-4 hover:opacity-90 transition group">
+                        <Link href={route('home')} className="flex items-center gap-4 hover:opacity-90 transition group">
                             
                             {/* --- BOLINHA PMG --- */}
                             <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center text-blue-900 dark:text-blue-400 font-extrabold shadow-sm text-sm shrink-0 border border-gray-200 dark:border-gray-700 group-hover:scale-105 transition-transform duration-300">
@@ -103,7 +103,7 @@ export default function PublicLayout({ children, title }) {
                             {/* ------------------------- */}
 
                             {auth.user ? (
-                                <Link href="/dashboard" className="px-5 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-full text-sm font-bold transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                <Link href={route('dashboard')} className="px-5 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-full text-sm font-bold transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                     Painel
                                 </Link>
                             ) : (
